@@ -107,9 +107,18 @@ class SpreadsheetScript():
 	def selectWorksheet(self, s_key, index):
 		return self.getWorksheetIds(s_key)[index]
 		
+	def deleteRecord(self, row):
+		cnfrm = raw_input('Confim deleting record '+row+' (y/n): ')
+		if cnfrm == 'y':
+			feed = self.client.GetListFeed(self.sheet_key, self.wksht_id)
+			self.client.DeleteRow(feed.entry[row-1]) # user enters from 1, but records are numbered from 0
+			print 'Record delete successful'
+		else:
+			print 'Record delete unsuccessful'
+		
 	#Takes in the document name, checks if it exists and asks the user for the worksheet to work with.
 	def flow(self, docmnt, rm_doc, delete=False, prnt=False):
-		# if rm_doc is not an empty string, delete it
+		# if rm_doc is not an empty string, delete spreadsheet with that title
 		if rm_doc != '':
 			self.deleteSpreadsheet(rm_doc)
 			sys.exit(2)	# may be taken out, we may ask user if they want to create a new spreadsheet or work with existing spreadsheet
@@ -244,7 +253,7 @@ def main():
 	doc = ''
 	new_doc = ''
 	rm_doc = ''
-	delete = False	# delete option set to False by default
+	delete = ''	# delete option set to empty string by default, sets (row, column) to delete
 	prnt = False	# print option set to False by default
 	hlp = False	# help option set to False by default
 	
@@ -259,7 +268,7 @@ def main():
 		elif opt == "--docName":
 			doc = val
 		elif opt == "--del":
-			delete = True	# delete option set to true, if the option is added
+			delete = value	# delete option sets row to delete to (row, column)
 		elif opt == "--print":
 			prnt = True	# print option set to true, if the option is added
 		elif opt == "--help":

@@ -107,31 +107,6 @@ class SpreadsheetScript():
 	def selectWorksheet(self, s_key, index):
 		return self.getWorksheetIds(s_key)[index]
 		
-	#Takes in the document name, checks if it exists and asks the user for the worksheet to work with.
-	def flow(self, docmnt, rm_doc, delete=False, prnt=False):
-		# if rm_doc is not an empty string, delete it
-		if rm_doc != '':
-			self.deleteSpreadsheet(rm_doc)
-			sys.exit(2)	# may be taken out, we may ask user if they want to create a new spreadsheet or work with existing spreadsheet
-		
-		self.sheet_key = self.getSpreadsheetKey(docmnt)
-		if self.sheet_key == '':
-			print docmnt,"doesn't exist"
-			sys.exit(2)
-		wkshts = self.getWorksheetTitles(self.sheet_key)
-		for i in range(len(wkshts)):
-			print i+1, wkshts[i]
-		wkid = input("Select worksheet: ")
-		self.wksht_id = self.selectWorksheet(self.sheet_key, wkid-1)
-		
-		# if delete is set to True, do delete operation
-		if delete:
-			row = input('Enter row to delete: ')
-			self.deleteRecord(row)
-		#if prnt is set to True, prints the contents of the specified worksheet to the screen
-		if prnt:
-			self.printData()
-		
 	def updateCell(self, docName, row, col, new_value, wks = 0):
 		#Overwrites the value in the cell specified with new_value
 		self.spreadsheet = self.gs_client.open(docName)
@@ -189,6 +164,31 @@ class SpreadsheetScript():
 		print list_of_values
 		for i in range(1,len(list_of_values)):
 			self.worksheet.update_cell(i,col,"")
+			
+	#Takes in the document name, checks if it exists and asks the user for the worksheet to work with.
+	def flow(self, docmnt, rm_doc, delete=False, prnt=False):
+		# if rm_doc is not an empty string, delete it
+		if rm_doc != '':
+			self.deleteSpreadsheet(rm_doc)
+			sys.exit(2)	# may be taken out, we may ask user if they want to create a new spreadsheet or work with existing spreadsheet
+		
+		self.sheet_key = self.getSpreadsheetKey(docmnt)
+		if self.sheet_key == '':
+			print docmnt,"doesn't exist"
+			sys.exit(2)
+		wkshts = self.getWorksheetTitles(self.sheet_key)
+		for i in range(len(wkshts)):
+			print i+1, wkshts[i]
+		wkid = input("Select worksheet: ")
+		self.wksht_id = self.selectWorksheet(self.sheet_key, wkid-1)
+		
+		# if delete is set to True, do delete operation
+		if delete:
+			row = input('Enter row to delete: ')
+			self.deleteRecord(row)
+		#if prnt is set to True, prints the contents of the specified worksheet to the screen
+		if prnt:
+			self.printData()
 			
 	# prints script documentation
 	@staticmethod

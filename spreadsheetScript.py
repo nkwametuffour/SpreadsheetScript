@@ -107,11 +107,9 @@ class SpreadsheetScript():
 	def selectWorksheet(self, s_key, index):
 		return self.getWorksheetIds(s_key)[index]
 		
-<<<<<<< HEAD
-=======
 	def deleteRecord(self, row):
-		cnfrm = raw_input('Confim deleting record '+row+' (y/n): ')
-		if cnfrm == 'y':
+		cnfrm = raw_input('Confim deleting record '+str(row)+' (y/n): ')
+		if cnfrm.lower() == 'y':
 			feed = self.client.GetListFeed(self.sheet_key, self.wksht_id)
 			self.client.DeleteRow(feed.entry[row-1]) # user enters from 1, but records are numbered from 0
 			print 'Record delete successful'
@@ -143,7 +141,6 @@ class SpreadsheetScript():
 		if prnt:
 			self.printData()
 		
->>>>>>> upstream/master
 	def updateCell(self, docName, row, col, new_value, wks = 0):
 		#Overwrites the value in the cell specified with new_value
 		self.spreadsheet = self.gs_client.open(docName)
@@ -246,7 +243,7 @@ Main Options
 def main():
 	# check if user has entered the correct options
 	try:
-		opts, args = getopt.getopt(sys.argv[1:], "", ["user=", "pwd=", "src=", "docName=", "print", "del=", "help", "new=", "rmv="])
+		opts, args = getopt.getopt(sys.argv[1:], "", ["user=", "pwd=", "src=", "docName=", "print", "del", "help", "new=", "rmv="])
 	except getopt.GetoptError, e:
 		print "python spreadsheetScript.py --help. For help:", e, "\n"
 		sys.exit(2)
@@ -273,7 +270,7 @@ def main():
 		elif opt == "--docName":
 			doc = val
 		elif opt == "--del":
-			delete = value	# delete option sets row to delete to (row, column)
+			delete = True	# delete option sets row to delete to (row, column)
 		elif opt == "--print":
 			prnt = True	# print option set to true, if the option is added
 		elif opt == "--help":

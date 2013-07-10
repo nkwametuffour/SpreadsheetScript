@@ -36,7 +36,7 @@ class SpreadsheetScript():
 		print 'Spreadsheet created'
 		
 	def deleteSpreadsheet(self, doc):
-		
+		# delete a spreadsheet document by passing Title of document
 		for spdsht in self.docs_client.GetAllResources():
 			if spdsht.title.text == doc:
 				cnfrm = raw_input('Confim deleting '+doc+' (y/n): ')
@@ -193,12 +193,18 @@ class SpreadsheetScript():
 	# prints script documentation
 	@staticmethod
 	def getHelp():
-		print """NAME
-	spreadsheetScript
+		print """SPREADSHEET SCRIPT
+
+
+NAME
+	spreadsheetScript - a Python script which interacts with Google Spreadsheets.
+
 USAGE
 	python spreadsheetScript [OPTIONS]
+
 OVERVIEW
 	spreadsheetScript script enables access to the spreadsheet files in a Google Drive account using the user's email and password.
+
 OPTIONS
 Generic Script Information
 	--help
@@ -210,15 +216,15 @@ Main Options
 	--pwd
 		Provide a password for the username to log in.
 	--src
-		Provide the spreadsheet source name, like a project name, not spreadsheet name.
+		Provide the spreadsheet source name (like a project name, not spreadsheet name).
 	--docName
 		Enter the title of an existing spreadsheet document to work with.
 	--new
 		Creates a new spreadsheet document and names it with the string provided after --new.
 	--rmv
-		Remove the spreadsheet with the title provided, from Drive
+		Remove the spreadsheet with the title provided, from Drive.
 	--del
-		Delete cells, columns or entire rows from the spreadsheet
+		Delete cells, columns or entire rows from the spreadsheet.
 	--print
 		Does not take any character after it, if specified will print the contents of the document name provided.
 	--help
@@ -280,11 +286,8 @@ def main():
 	else:
 		# create SpreadsheetScript instance with user and pwd fetched	
 		smclient = SpreadsheetScript(user, pwd, src)
-
-	# create SpreadsheetScript instance with user and pwd fetched	
-	#client = SpreadsheetScript(user, pwd, src)
 	
-	# passing document title, delete, prnt options to method
+	# passing document title, delete, and prnt options to method
 	smclient.flow(doc, rm_doc, delete, prnt)
 
 # if script is being run as a standalone application, its name attribute is __main__

@@ -8,6 +8,7 @@ import gspread
 import getopt
 import sys
 
+# Spreadsheet Class
 class SpreadsheetScript():
 	
 	def __init__(self, email, password, src='Default'):

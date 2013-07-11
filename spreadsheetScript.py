@@ -54,14 +54,14 @@ class SpreadsheetScript():
 		# print field titles of data
 		for row in feed.entry:
 			for key in row.custom:
-				print key,
+				print key+'\t\t',
 			print
 			break
 		
 		# print records in each row
 		for row in feed.entry:
 			for key in row.custom:
-				print "%s" % (row.custom[key].text),
+				print "%s" % (row.custom[key].text)+'\t\t',
 			print
 	
 	# return a list of spreadsheets titles
@@ -107,6 +107,8 @@ class SpreadsheetScript():
 	def selectWorksheet(self, s_key, index):
 		return self.getWorksheetIds(s_key)[index]
 		
+<<<<<<< HEAD
+=======
 	def deleteRecord(self, row):
 		cnfrm = raw_input('Confim deleting record '+row+' (y/n): ')
 		if cnfrm == 'y':
@@ -141,6 +143,7 @@ class SpreadsheetScript():
 		if prnt:
 			self.printData()
 		
+>>>>>>> upstream/master
 	def updateCell(self, docName, row, col, new_value, wks = 0):
 		#Overwrites the value in the cell specified with new_value
 		self.spreadsheet = self.gs_client.open(docName)
@@ -236,6 +239,8 @@ Main Options
 		Delete cells, columns or entire rows from the spreadsheet.
 	--print
 		Does not take any character after it, if specified will print the contents of the document name provided.
+	--help
+		Prints this screen
 	"""
 	
 def main():

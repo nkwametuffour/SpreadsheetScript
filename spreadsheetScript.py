@@ -106,7 +106,7 @@ class SpreadsheetScript():
 	# select from a list of worksheets	
 	def selectWorksheet(self, s_key, index):
 		return self.getWorksheetIds(s_key)[index]
-		
+
 	def deleteRecord(self, row):
 		cnfrm = raw_input('Confim deleting record '+str(row)+' (y/n): ')
 		if cnfrm.lower() == 'y':
@@ -136,6 +136,7 @@ class SpreadsheetScript():
 		#if prnt is set to True, prints the contents of the specified worksheet to the screen
 		if prnt:
 			self.printData()
+
 		#if delete is set to True, do delete operation
 		if delete:
 			row = input('Enter row to delete: ')
@@ -156,7 +157,7 @@ class SpreadsheetScript():
 				self.updateCol(docmnt, col, values, wkid -1)
 				self.printData()
 			elif choice.strip() == 'cell':
-				cell = input('Enter row,column,value in that order: ')
+				cell = raw_input('Enter row,column,value in that order: ')
 				#value = raw_input('Cell value: ')
 				cell = cell.split(',')
 				self.updateCell(docmnt, cell[0],cell[1],cell[2], wkid -1)
@@ -191,12 +192,12 @@ class SpreadsheetScript():
 		#list_of_values=self.worksheet.col_values(col)
 		#print list_of_values
 		for i in range(len(values)):
-			self.worksheet.update_cell(i+1,col,values[i])
+			self.worksheet.update_cell(i+2,col,values[i])
 	
 	def deleteCellValue(self, docName, x, y, wks = 0):
 		#Puts an empty string in the specified cell
 		self.spreadsheet = self.gs_client.open(docName)
-		self.worksheet = spreadsheet.get_worsheet(wks)
+		self.worksheet = self.spreadsheet.get_worksheet(wks)
 		print "This would empty your specified cell of this current value :",
 		print self.worksheet.cell(x,y).value
 		self.worksheet.update_cell(x,y,"")
@@ -204,7 +205,7 @@ class SpreadsheetScript():
 	def deleteRowValues(self, docName, row, wks = 0):
 		#Puts an empty string in the cells on the specified row
 		self.spreadsheet = self.gs_client.open(docName)
-		self.worksheet = spreadsheet.get_worsheet(wks)
+		self.worksheet = self.spreadsheet.get_worksheet(wks)
 		print "This would empty the specified row of these values:\n",
 		list_of_values=self.worksheet.row_values(row)
 		print list_of_values
@@ -214,7 +215,7 @@ class SpreadsheetScript():
 	def deleteColValues(self, docName, col, wks = 0):
 		#Puts an empty string in the cells on the specified column
 		self.spreadsheet = self.gs_client.open(docName)
-		self.worksheet = spreadsheet.get_worsheet(wks)
+		self.worksheet = self.spreadsheet.get_worksheet(wks)
 		print "This would empty the specified column of these values:\n",
 		list_of_values=self.worksheet.col_values(col)
 		print list_of_values

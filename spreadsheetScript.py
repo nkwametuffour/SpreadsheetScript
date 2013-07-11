@@ -106,9 +106,7 @@ class SpreadsheetScript():
 	# select from a list of worksheets	
 	def selectWorksheet(self, s_key, index):
 		return self.getWorksheetIds(s_key)[index]
-		
-<<<<<<< HEAD
-=======
+
 	def deleteRecord(self, row):
 		cnfrm = raw_input('Confim deleting record '+row+' (y/n): ')
 		if cnfrm == 'y':
@@ -142,8 +140,7 @@ class SpreadsheetScript():
 		#if prnt is set to True, prints the contents of the specified worksheet to the screen
 		if prnt:
 			self.printData()
-		
->>>>>>> upstream/master
+
 	def updateCell(self, docName, row, col, new_value, wks = 0):
 		#Overwrites the value in the cell specified with new_value
 		self.spreadsheet = self.gs_client.open(docName)

@@ -117,7 +117,7 @@ class SpreadsheetScript():
 			print 'Record delete unsuccessful'
 		
 	#Takes in the document name, checks if it exists and asks the user for the worksheet to work with.
-	def flow(self, docmnt, rm_doc, delete=False, prnt=False, edit = False):
+	def flow(self, docmnt, rm_doc, delete=False, prnt=False, edit=False, delVal=False):
 		# if rm_doc is not an empty string, delete spreadsheet with that title
 		if rm_doc != '':
 			self.deleteSpreadsheet(rm_doc)
@@ -162,6 +162,11 @@ class SpreadsheetScript():
 				cell = cell.split(',')
 				self.updateCell(docmnt, cell[0],cell[1],cell[2], wkid -1)
 				self.printData()
+		
+		if delVal:
+			cell = raw_input("Enter the cell's row, column in that order.(Example 2,3): ")
+			cell = (cell.strip()).split(',')
+			sef.deleteCellValue(docmnt, cell[0], cell[1], wkid-1)
 				
 		
 	def updateCell(self, docName, row, col, new_value, wks = 0):
@@ -194,13 +199,13 @@ class SpreadsheetScript():
 		for i in range(len(values)):
 			self.worksheet.update_cell(i+2,col,values[i])
 	
-	def deleteCellValue(self, docName, x, y, wks = 0):
+	def deleteCellValue(self, docName, row, col, wks = 0):
 		#Puts an empty string in the specified cell
 		self.spreadsheet = self.gs_client.open(docName)
 		self.worksheet = self.spreadsheet.get_worksheet(wks)
-		print "This would empty your specified cell of this current value :",
-		print self.worksheet.cell(x,y).value
-		self.worksheet.update_cell(x,y,"")
+		#print "This would empty your specified cell of this current value :",
+		#print self.worksheet.cell(x,y).value
+		self.worksheet.update_cell(row,col,"")
 	
 	def deleteRowValues(self, docName, row, wks = 0):
 		#Puts an empty string in the cells on the specified row
@@ -266,7 +271,7 @@ Main Options
 def main():
 	# check if user has entered the correct options
 	try:
-		opts, args = getopt.getopt(sys.argv[1:], "", ["user=", "pwd=", "src=", "docName=", "print", "del", "help", "new=", "rmv=", "edit"])
+		opts, args = getopt.getopt(sys.argv[1:], "", ["user=", "pwd=", "src=", "docName=", "print", "del", "help", "new=", "rmv=", "edit", "delVal"])
 	except getopt.GetoptError, e:
 		print "python spreadsheetScript.py --help. For help:", e, "\n"
 		sys.exit(2)
@@ -282,6 +287,7 @@ def main():
 	prnt = False	# print option set to False by default
 	hlp = False	# help option set to False by default
 	edit = False
+	delVal = False
 	# get user and pwd values provided by user into their respective variables	
 	for opt, val in opts:
 		if opt == "--user":
@@ -304,6 +310,8 @@ def main():
 			rm_doc = val	# title of document to remove
 		elif opt == "--edit":
 			edit = True
+		elif opt == "--delVal":
+			delVal = True
 	
 	# validate user and pwd values, if any is empty, terminate script		
 	if (user == '' or pwd == '') and not hlp:
@@ -325,7 +333,7 @@ def main():
 	
 	# passing document title, delete, and prnt options to method
 	while loop:
-		smclient.flow(doc, rm_doc, delete, prnt, edit)
+		smclient.flow(doc, rm_doc, delete, prnt, edit, delVal)
 		choice = (raw_input('Continue? y/n : ')).lower()
 		if not choice == 'y':
 			loop = False

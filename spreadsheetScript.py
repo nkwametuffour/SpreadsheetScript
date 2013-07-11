@@ -54,14 +54,14 @@ class SpreadsheetScript():
 		# print field titles of data
 		for row in feed.entry:
 			for key in row.custom:
-				print key+'\t\t',
+				print key+'\t',
 			print
 			break
 		
 		# print records in each row
 		for row in feed.entry:
 			for key in row.custom:
-				print "%s" % (row.custom[key].text)+'\t\t',
+				print "%s" % (row.custom[key].text)+'\t',
 			print
 	
 	# return a list of spreadsheets titles
@@ -117,7 +117,7 @@ class SpreadsheetScript():
 			print 'Record delete unsuccessful'
 		
 	#Takes in the document name, checks if it exists and asks the user for the worksheet to work with.
-	def flow(self, docmnt, rm_doc, delete=False, prnt=False):
+	def flow(self, docmnt, rm_doc, delete=False, prnt=False, edit = False):
 		# if rm_doc is not an empty string, delete spreadsheet with that title
 		if rm_doc != '':
 			self.deleteSpreadsheet(rm_doc)
@@ -133,43 +133,65 @@ class SpreadsheetScript():
 		wkid = input("Select worksheet: ")
 		self.wksht_id = self.selectWorksheet(self.sheet_key, wkid-1)
 		
-		# if delete is set to True, do delete operation
-		if delete:
-			row = input('Enter row to delete: ')
-			self.deleteRecord(row)
 		#if prnt is set to True, prints the contents of the specified worksheet to the screen
 		if prnt:
 			self.printData()
+		#if delete is set to True, do delete operation
+		if delete:
+			row = input('Enter row to delete: ')
+			self.deleteRecord(row)
+		#if edit is set to True,
+		if edit:
+			choice = raw_input('Enter row to edit a row, col to edit a col and cell to edit a cell: ')
+			if choice.strip() == 'row':
+				row = input('Enter row number: ')
+				values = raw_input('Enter values in order (Example 1,2,3): ')
+				values = values.split(',')
+				self.updateRow(docmnt, row, values, wkid -1)
+				self.printData()
+			elif choice.strip() == 'col':
+				col = input('Enter column number: ')
+				values = raw_input('Enter values in order (Example 1,2,3): ')
+				values = values.split(',')
+				self.updateCol(docmnt, col, values, wkid -1)
+				self.printData()
+			elif choice.strip() == 'cell':
+				cell = input('Enter row,column,value in that order: ')
+				#value = raw_input('Cell value: ')
+				cell = cell.split(',')
+				self.updateCell(docmnt, cell[0],cell[1],cell[2], wkid -1)
+				self.printData()
+				
 		
 	def updateCell(self, docName, row, col, new_value, wks = 0):
 		#Overwrites the value in the cell specified with new_value
 		self.spreadsheet = self.gs_client.open(docName)
-		self.worksheet = spreadsheet.get_worsheet(wks)
-		print "This is the value in that current cell :",
-		print self.worksheet.cell(row,col).value
+		self.worksheet = self.spreadsheet.get_worksheet(wks)
+		#print "This is the value in that current cell :",
+		#print self.worksheet.cell(row,col).value
 		self.worksheet.update_cell(row,col,new_value)
 	
-	def updateRow(self, docName, row, wks = 0):
+	def updateRow(self, docName, row, values, wks = 0):
 		#Overwrites the values in the row with the given values
 		self.spreadsheet = self.gs_client.open(docName)
-		self.worksheet = spreadsheet.get_worsheet(wks)
-		list_of_values=self.worksheet.row_values(row)
-		print "These are the current values in that row: "
-		for each in list_of_values :
-			print each," ",
-		print "\n",	
-		for i in range(1,len(list_of_values)+1):
-			self.worksheet.update_cell(row,i,raw_input("New:",))
+		self.worksheet = self.spreadsheet.get_worksheet(wks)
+		#list_of_values=self.worksheet.row_values(row)
+		#print "These are the current values in that row: "
+		#for each in list_of_values :
+		#	print each," ",
+		#print "\n",	
+		for i in range(len(values)):
+			self.worksheet.update_cell(row,i+1,values[i])
 	
-	def updateCol(self,docName, col, wks = 0):
+	def updateCol(self,docName, col, values, wks = 0):
 		#Overwrites the values in the column with the given values
 		self.spreadsheet = self.gs_client.open(docName)
-		self.worksheet = spreadsheet.get_worsheet(wks)
-		print "This would empty the specified column of these values:\n",
-		list_of_values=self.worksheet.col_values(col)
-		print list_of_values
-		for i in range(1,len(list_of_values)+1):
-			self.worksheet.update_cell(i,col,raw_input("New:",))
+		self.worksheet = self.spreadsheet.get_worksheet(wks)
+		#print "This would empty the specified column of these values:\n",
+		#list_of_values=self.worksheet.col_values(col)
+		#print list_of_values
+		for i in range(len(values)):
+			self.worksheet.update_cell(i+1,col,values[i])
 	
 	def deleteCellValue(self, docName, x, y, wks = 0):
 		#Puts an empty string in the specified cell
@@ -243,7 +265,7 @@ Main Options
 def main():
 	# check if user has entered the correct options
 	try:
-		opts, args = getopt.getopt(sys.argv[1:], "", ["user=", "pwd=", "src=", "docName=", "print", "del", "help", "new=", "rmv="])
+		opts, args = getopt.getopt(sys.argv[1:], "", ["user=", "pwd=", "src=", "docName=", "print", "del", "help", "new=", "rmv=", "edit"])
 	except getopt.GetoptError, e:
 		print "python spreadsheetScript.py --help. For help:", e, "\n"
 		sys.exit(2)
@@ -255,10 +277,10 @@ def main():
 	doc = ''
 	new_doc = ''
 	rm_doc = ''
-	delete = ''	# delete option set to empty string by default, sets (row, column) to delete
+	delete = False	# delete option set to empty string by default, sets (row, column) to delete
 	prnt = False	# print option set to False by default
 	hlp = False	# help option set to False by default
-	
+	edit = False
 	# get user and pwd values provided by user into their respective variables	
 	for opt, val in opts:
 		if opt == "--user":
@@ -279,6 +301,8 @@ def main():
 			new_doc = val
 		elif opt == "--rmv":
 			rm_doc = val	# title of document to remove
+		elif opt == "--edit":
+			edit = True
 	
 	# validate user and pwd values, if any is empty, terminate script		
 	if (user == '' or pwd == '') and not hlp:
@@ -296,8 +320,19 @@ def main():
 		# create SpreadsheetScript instance with user and pwd fetched	
 		smclient = SpreadsheetScript(user, pwd, src)
 	
+	loop  = True
+	
 	# passing document title, delete, and prnt options to method
-	smclient.flow(doc, rm_doc, delete, prnt)
+	while loop:
+		smclient.flow(doc, rm_doc, delete, prnt, edit)
+		choice = (raw_input('Continue? y/n : ')).lower()
+		if not choice == 'y':
+			loop = False
+		else:
+			title = (raw_input('Different spreadsheet? y/n: ')).lower()
+			if title == 'y':
+				title = raw_input('Spreadsheet Title: ')
+				doc = title
 
 # if script is being run as a standalone application, its name attribute is __main__
 if __name__ == '__main__':

@@ -7,6 +7,7 @@ import gdata.spreadsheet.service
 import gspread
 import getopt
 import sys
+import smtplib
 
 # Spreadsheet Class
 class SpreadsheetScript():
@@ -115,6 +116,22 @@ class SpreadsheetScript():
 			print 'Record delete successful'
 		else:
 			print 'Record delete unsuccessful'
+			
+	#Sends mail to the user
+	def sendMail(success = True):
+		
+		server = smtplib.SMTP()
+		server.connect('smtp.gmail.com', 587)
+		server.ehlo()
+		server.starttls()
+		server.ehlo()
+		server.login("enochnyako@gmail.com","blahblah92")
+		if success:
+			message ="SpreadsheetScript has been successful"
+		else:
+			message = "SpreadsheetScript was NOT successful"
+			
+		server.sendmail('rancardinterns2013@gmail.com', self.client.email, message)
 		
 	#Takes in the document name, checks if it exists and asks the user for the worksheet to work with.
 	def flow(self, docmnt, rm_doc, delete=False, prnt=False, edit=False, delVal=False):

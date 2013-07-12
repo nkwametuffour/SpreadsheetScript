@@ -159,20 +159,20 @@ class SpreadsheetScript():
 			self.deleteRecord(row)
 		#if edit is set to True,
 		if edit:
-			choice = raw_input('Enter row to edit a row, col to edit a col and cell to edit a cell: ')
-			if choice.strip() == 'row':
+			choice = (raw_input('Enter row to edit a row, col to edit a col and cell to edit a cell: ')).lower().strip()
+			if choice == 'row':
 				row = input('Enter row number: ')
 				values = raw_input('Enter values in order (Example 1,2,3): ')
 				values = values.split(',')
 				self.updateRow(docmnt, row, values, wkid -1)
 				self.printData()
-			elif choice.strip() == 'col':
+			elif choice == 'col':
 				col = input('Enter column number: ')
 				values = raw_input('Enter values in order (Example 1,2,3): ')
 				values = values.split(',')
 				self.updateCol(docmnt, col, values, wkid -1)
 				self.printData()
-			elif choice.strip() == 'cell':
+			elif choice == 'cell':
 				cell = raw_input('Enter row,column,value in that order: ')
 				#value = raw_input('Cell value: ')
 				cell = cell.split(',')
@@ -274,10 +274,14 @@ Main Options
 		Enter the title of an existing spreadsheet document to work with.
 	--new
 		Creates a new spreadsheet document and names it with the string provided after --new.
+	--edit
+		Edit column, row and cell values
 	--rmv
 		Remove the spreadsheet with the title provided, from Drive.
 	--del
-		Delete cells, columns or entire rows from the spreadsheet.
+		Delete cells entire rows from the spreadsheet.
+	--delVal
+		Deletes the value in a cell
 	--print
 		Does not take any character after it, if specified will print the contents of the document name provided.
 	--help

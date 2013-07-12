@@ -1,5 +1,6 @@
 #!/usr/bin/python
 
+import gdata.spreadsheet.service
 import gdata
 import gdata.client
 import gdata.docs.client
@@ -10,6 +11,9 @@ import sys
 import os
 import webbrowser
 import smtplib
+from Crypto.Cipher import AES
+import base64
+import os
 
 # Spreadsheet Class
 class SpreadsheetScript():
@@ -23,27 +27,44 @@ class SpreadsheetScript():
 		
 		try:
 			f = open(os.environ['HOME']+'/.hide/tokens.txt','r+')
-			tkn = f.read().split('\n')
+			cred = f.read().split('\n')
+			print cred[:]
+			try:
+				self.__create_clients(self.__decrypt(cred[0]), self.__decrypt(cred[1]), src)
+			except Exception, e:
+				print e
 		except:
 			try:
-				tkn = self.__get_access_auth()
-				self.__store_token(tkn)
+				user = raw_input('Enter username: ').strip()
+				pwd = raw_input('Enter password: ').strip()
+				# validate user and password
+				try:
+					self.__create_clients(user, pwd, src)
+				except Exception, e:
+					print 'Login failed.',e
+					
+				self.__store_cred([user, pwd])
 			except Exception, e:
 				print 'Program execution failed:',e
-		token = gdata.gauth.OAuth2Token(client_id=self.CLIENT_ID, client_secret=self.CLIENT_SECRET, scope=self.SCOPE, user_agent=self.USER_AGENT, access_token=tkn[1], refresh_token=tkn[0])
+		#token = gdata.gauth.OAuth2Token(client_id=self.CLIENT_ID, client_secret=self.CLIENT_SECRET, scope=self.SCOPE, user_agent=self.USER_AGENT, access_token=tkn[1], refresh_token=tkn[0])
 		# create gdata spreadsheet client instance and login with email and password
-		self.client = gdata.spreadsheets.client.SpreadsheetsClient()
-		token.authorize(self.client)
+		#self.client = gdata.spreadsheets.client.SpreadsheetsClient()
+		#token.authorize(self.client)
 		self.sheet_key = ''
-		self.wksht_id = ''
+		self.wksht_id = ''	
+		
+	def __create_clients(self, user, pswd, src):
+		self.client = gdata.spreadsheet.service.SpreadsheetsService()
+		self.client.email = user
+		self.client.password = pswd
+		self.client.ProgrammaticLogin()
 		
 		# create gspread client instance and login
-		#self.gs_client = gspread.login(email, password)
+		self.gs_client = gspread.login(user, pswd)
 		
 		# create google docs client and login
 		self.docs_client = gdata.docs.client.DocsClient(source=src)
-		token.authorize(self.docs_client)
-		#self.docs_client.client_login(email, password, source=src, service='writely')
+		self.docs_client.client_login(user, pswd, source=src, service='writely')
 		
 	def __get_access_auth(self):
 		token = gdata.gauth.OAuth2Token(client_id=self.CLIENT_ID, client_secret=self.CLIENT_SECRET, scope=self.SCOPE, user_agent=self.USER_AGENT)
@@ -55,15 +76,40 @@ class SpreadsheetScript():
 	def __store_token(self, accs_data):
 		os.system("mkdir "+os.environ['HOME']+"/.hide")
 		os.system("touch tokens.txt")
-		print accs_data[0], accs_data[1]
 		f = open(os.environ['HOME']+'/.hide/tokens.txt','w+')
 		for i in range(len(accs_data)):
 			f.write(accs_data[i] + '\n')
 		f.read()
 		f.close()
+	
+	def __encrypt(self, string):
+		BLOCK_SIZE = 32
+		PADDING = '{'
+		pad = lambda s: s + (BLOCK_SIZE - len(s) % BLOCK_SIZE) * PADDING
+		EncodeAES = lambda c, s: base64.b64encode(c.encrypt(pad(s)))
+		DecodeAES = lambda c, e: c.decrypt(base64.b64decode(e)).rstrip(PADDING)
+		# generate a random secret key
+		secret = os.urandom(BLOCK_SIZE)
+		# create a cipher object using the random secret
+		cipher = AES.new(secret)
+		# encoded string
+		encoded = EncodeAES(cipher, string)
+		return encoded
+	
+	def __decrypt(self, enc):
+		return DecodeAES(cipher, encoded)
+		
+	def __store_cred(self, log_cred):
+		os.system("mkdir "+os.environ['HOME']+"/.hide")
+		os.system("touch tokens.txt")
+		f = open(os.environ['HOME']+'/.hide/tokens.txt','w+')
+		for i in range(len(log_cred)):
+			f.write(self.__encrypt(log_cred[i]) + '\n')
+		f.read()
+		f.close()
 
 	# create a new Google spreadsheet in Drive
-	def createSpreadsheet(self, src, doc):
+	def createSpreadsheet(self, doc):
 		# create spreadsheet
 		document = gdata.docs.data.Resource(type='spreadsheet', title=doc)
 		document = self.docs_client.CreateResource(document)
@@ -84,25 +130,23 @@ class SpreadsheetScript():
 		
 	#Prints the data in the worksheet
 	def printData(self):
-		feed = self.client.get_list_feed(self.sheet_key, self.wksht_id)
+		feed = self.client.GetListFeed(self.sheet_key, self.wksht_id)
 		# print field titles of data
-		records = []
 		for row in feed.entry:
-			records.append(row.to_dict())
-			
-		# print headers
-		for ky in records[0].keys():
-			print ky+'\t\t',
-		print
+			for key in row.custom:
+				print key+'\t\t',
+			print
+			break
+		
 		# print records in each row
-		for i in range(len(records)):
-			for ky in records[i].keys():
-				print records[i][ky]+'\t\t',
+		for row in feed.entry:
+			for key in row.custom:
+				print "%s" % (row.custom[key].text)+'\t\t',
 			print
 	
 	# return a list of spreadsheets titles
 	def getSpreadsheetsTitles(self):
-		feed = self.client.get_spreadsheets()
+		feed = self.client.GetSpreadsheetsFeed()
 		spdsheets = []
 		for doc in feed.entry:
 			spsheets.append(doc.title.text)
@@ -116,16 +160,17 @@ class SpreadsheetScript():
 	
 	#Returns the spreadsheet key for docTitle
 	def getSpreadsheetKey(self, docTitle):
-		feed = self.client.get_spreadsheets()
+		feed = self.client.GetSpreadsheetsFeed()
 		for doc in feed.entry:
 			if doc.title.text == docTitle:
+				print doc.id.text
 				self.sheet_key = doc.id.text.rsplit('/', 1)[1]
 				return self.sheet_key
 		return ''
 	
 	# returns all worksheet IDs of a spreadsheet as a list
 	def getWorksheetIds(self, s_key):
-		feed = self.client.get_worksheets(s_key)
+		feed = self.client.GetWorksheetsFeed(s_key)
 		wksheets = []
 		for sht in feed.entry:
 			wksheets.append(sht.id.text.rsplit('/',1)[1])
@@ -133,7 +178,7 @@ class SpreadsheetScript():
 		
 	#Returns a list of worksheet titles
 	def getWorksheetTitles(self, s_key):
-		feed = self.client.get_worksheets(s_key)
+		feed = self.client.GetWorksheetsFeed(s_key)
 		wksheets = []
 		for sht in feed.entry:
 			wksheets.append(sht.title.text)
@@ -174,9 +219,12 @@ class SpreadsheetScript():
 			self.deleteSpreadsheet(rm_doc)
 			sys.exit(2)	# may be taken out, we may ask user if they want to create a new spreadsheet or work with existing spreadsheet
 		
-		self.sheet_key = self.getSpreadsheetKey(docmnt)
+		# if docmnt passed is not an empty string, get its key for use
+		if docmnt != '':
+			self.sheet_key = self.getSpreadsheetKey(docmnt)
+		
 		if self.sheet_key == '':
-			print docmnt,"doesn't exist"
+			print "File doesn't exist"
 			sys. exit(2)
 		wkshts = self.getWorksheetTitles(self.sheet_key)
 		for i in range(len(wkshts)):
@@ -185,7 +233,7 @@ class SpreadsheetScript():
 		self.wksht_id = self.selectWorksheet(self.sheet_key, wkid-1)
 		
 		#if prnt is set to True, prints the contents of the specified worksheet to the screen
-		if prnt:
+		if prnt and docmnt != '':
 			self.printData()
 
 		#if delete is set to True, do delete operation
@@ -291,7 +339,7 @@ USAGE
 	python spreadsheetScript [OPTIONS]
 
 OVERVIEW
-	spreadsheetScript script enables access to the spreadsheet files in a Google Drive account using the user's email and password.
+	spreadsheetScript script enables access to the spreadsheet files in a Google Drive account using OAuth2.0 authentication.
 
 OPTIONS
 Generic Script Information
@@ -299,10 +347,6 @@ Generic Script Information
 		Displays this documentation of the script, and then exits
 	
 Main Options
-	--user
-		Provide a username with which to log into Google Drive.
-	--pwd
-		Provide a password for the username to log in.
 	--src
 		Provide the spreadsheet source name (like a project name, not spreadsheet name).
 	--docName
@@ -368,7 +412,7 @@ def main():
 	elif new_doc != '':
 		# create a new spreadsheet document with string in new_doc variable
 		smclient = SpreadsheetScript(src)
-		smclient.createSpreadsheet(src, new_doc)
+		smclient.createSpreadsheet(new_doc)
 		doc = new_doc
 	else:
 		# create SpreadsheetScript instance with user and pwd fetched	

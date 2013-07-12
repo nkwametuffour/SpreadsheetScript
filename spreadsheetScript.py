@@ -24,28 +24,18 @@ class SpreadsheetScript():
 	USER_AGENT = 'Spreadsheet'
 	
 	def __init__(self, src='Default'):
-		
 		try:
-			f = open(os.environ['HOME']+'/.hide/tokens.txt','r+')
-			cred = f.read().split('\n')
-			print cred[:]
+			user = raw_input('Enter username: ').strip()
+			pwd = raw_input('Enter password: ').strip()
+			# validate user and password
 			try:
-				self.__create_clients(self.__decrypt(cred[0]), self.__decrypt(cred[1]), src)
+				self.__create_clients(user, pwd, src)
 			except Exception, e:
-				print e
-		except:
-			try:
-				user = raw_input('Enter username: ').strip()
-				pwd = raw_input('Enter password: ').strip()
-				# validate user and password
-				try:
-					self.__create_clients(user, pwd, src)
-				except Exception, e:
-					print 'Login failed.',e
-					
-				self.__store_cred([user, pwd])
-			except Exception, e:
-				print 'Program execution failed:',e
+				print 'Login failed.',e
+				
+			#self.__store_cred([user, pwd])
+		except Exception, e:
+			print 'Program execution failed:',e
 		#token = gdata.gauth.OAuth2Token(client_id=self.CLIENT_ID, client_secret=self.CLIENT_SECRET, scope=self.SCOPE, user_agent=self.USER_AGENT, access_token=tkn[1], refresh_token=tkn[0])
 		# create gdata spreadsheet client instance and login with email and password
 		#self.client = gdata.spreadsheets.client.SpreadsheetsClient()
@@ -70,7 +60,11 @@ class SpreadsheetScript():
 		token = gdata.gauth.OAuth2Token(client_id=self.CLIENT_ID, client_secret=self.CLIENT_SECRET, scope=self.SCOPE, user_agent=self.USER_AGENT)
 		webbrowser.open(token.generate_authorize_url(redirect_uri='urn:ietf:wg:oauth:2.0:oob'))
 		code = raw_input('What is the verification code? ').strip()
-		token.get_access_token(code)
+		try:
+			token.get_access_token(code)
+		except :
+			print "Access Denied"
+			sys.exit(0)	
 		return [token.refresh_token, token.access_token]
 		
 	def __store_token(self, accs_data):
@@ -163,7 +157,6 @@ class SpreadsheetScript():
 		feed = self.client.GetSpreadsheetsFeed()
 		for doc in feed.entry:
 			if doc.title.text == docTitle:
-				print doc.id.text
 				self.sheet_key = doc.id.text.rsplit('/', 1)[1]
 				return self.sheet_key
 		return ''
@@ -230,8 +223,12 @@ class SpreadsheetScript():
 		for i in range(len(wkshts)):
 			print i+1, wkshts[i]
 		wkid = input("Select worksheet: ")
-		self.wksht_id = self.selectWorksheet(self.sheet_key, wkid-1)
-		
+		try:
+			self.wksht_id = self.selectWorksheet(self.sheet_key, wkid-1)
+		except IndexError:
+			print "That index is out of range. Please input again"
+			self.wksht_id = self.selectWorksheet(self.sheet_key, wkid-1)
+			
 		#if prnt is set to True, prints the contents of the specified worksheet to the screen
 		if prnt and docmnt != '':
 			self.printData()
@@ -426,6 +423,10 @@ def main():
 		choice = (raw_input('Continue? y/n : ')).lower()
 		if not choice == 'y':
 			loop = False
+			try:
+				sendMail(True)
+			except:
+				pass	
 		else:
 			title = (raw_input('Different spreadsheet? y/n: ')).lower()
 			if title == 'y':

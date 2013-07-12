@@ -55,14 +55,14 @@ class SpreadsheetScript():
 		# print field titles of data
 		for row in feed.entry:
 			for key in row.custom:
-				print key+'\t',
+				print key+'\t\t',
 			print
 			break
 		
 		# print records in each row
 		for row in feed.entry:
 			for key in row.custom:
-				print "%s" % (row.custom[key].text)+'\t',
+				print "%s" % (row.custom[key].text)+'\t\t',
 			print
 	
 	# return a list of spreadsheets titles
@@ -142,7 +142,7 @@ class SpreadsheetScript():
 		self.sheet_key = self.getSpreadsheetKey(docmnt)
 		if self.sheet_key == '':
 			print docmnt,"doesn't exist"
-			sys.exit(2)
+			sys. exit(2)
 		wkshts = self.getWorksheetTitles(self.sheet_key)
 		for i in range(len(wkshts)):
 			print i+1, wkshts[i]

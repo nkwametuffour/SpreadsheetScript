@@ -92,12 +92,12 @@ class SpreadsheetScript():
 			
 		# print headers
 		for ky in records[0].keys():
-			print ky,
+			print ky+'\t\t',
 		print
 		# print records in each row
 		for i in range(len(records)):
 			for ky in records[i].keys():
-				print records[i][ky],
+				print records[i][ky]+'\t\t',
 			print
 	
 	# return a list of spreadsheets titles

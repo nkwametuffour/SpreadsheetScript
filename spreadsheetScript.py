@@ -119,13 +119,12 @@ class SpreadsheetScript():
 			
 	#Sends mail to the user
 	def sendMail(success = True):
-		
 		server = smtplib.SMTP()
 		server.connect('smtp.gmail.com', 587)
 		server.ehlo()
 		server.starttls()
 		server.ehlo()
-		server.login("enochnyako@gmail.com","blahblah92")
+		server.login("rancardinterns2013@gmail.com","nopintern2013")
 		if success:
 			message ="SpreadsheetScript has been successful"
 		else:

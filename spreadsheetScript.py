@@ -3,34 +3,67 @@
 import gdata
 import gdata.client
 import gdata.docs.client
-import gdata.spreadsheet.service
+import gdata.spreadsheets.client
 import gspread
 import getopt
 import sys
+import os
+import webbrowser
 import smtplib
 
 # Spreadsheet Class
 class SpreadsheetScript():
 	
-	def __init__(self, email, password, src='Default'):
+	CLIENT_ID = '498758732944.apps.googleusercontent.com'
+	CLIENT_SECRET = 'A_KMQ3yGorVSuTT-3P7DuHRC'
+	SCOPE = 'https://spreadsheets.google.com/feeds/'
+	USER_AGENT = 'Spreadsheet'
+	
+	def __init__(self, src='Default'):
+		
+		try:
+			f = open(os.environ['HOME']+'/.hide/tokens.txt','r+')
+			tkn = f.read().split('\n')
+		except:
+			try:
+				tkn = self.__get_access_auth()
+				self.__store_token(tkn)
+			except Exception, e:
+				print 'Program execution failed:',e
+		token = gdata.gauth.OAuth2Token(client_id=self.CLIENT_ID, client_secret=self.CLIENT_SECRET, scope=self.SCOPE, user_agent=self.USER_AGENT, access_token=tkn[1], refresh_token=tkn[0])
 		# create gdata spreadsheet client instance and login with email and password
-		self.client = gdata.spreadsheet.service.SpreadsheetsService()
-		self.client.email = email
-		self.client.password = password
-		#self.client.source = src
-		self.client.ProgrammaticLogin()
+		self.client = gdata.spreadsheets.client.SpreadsheetsClient()
+		token.authorize(self.client)
 		self.sheet_key = ''
 		self.wksht_id = ''
 		
 		# create gspread client instance and login
-		self.gs_client = gspread.login(email, password)
+		#self.gs_client = gspread.login(email, password)
 		
 		# create google docs client and login
 		self.docs_client = gdata.docs.client.DocsClient(source=src)
-		self.docs_client.client_login(email, password, source=src, service='writely')
+		token.authorize(self.docs_client)
+		#self.docs_client.client_login(email, password, source=src, service='writely')
+		
+	def __get_access_auth(self):
+		token = gdata.gauth.OAuth2Token(client_id=self.CLIENT_ID, client_secret=self.CLIENT_SECRET, scope=self.SCOPE, user_agent=self.USER_AGENT)
+		webbrowser.open(token.generate_authorize_url(redirect_uri='urn:ietf:wg:oauth:2.0:oob'))
+		code = raw_input('What is the verification code? ').strip()
+		token.get_access_token(code)
+		return [token.refresh_token, token.access_token]
+		
+	def __store_token(self, accs_data):
+		os.system("mkdir "+os.environ['HOME']+"/.hide")
+		os.system("touch tokens.txt")
+		print accs_data[0], accs_data[1]
+		f = open(os.environ['HOME']+'/.hide/tokens.txt','w+')
+		for i in range(len(accs_data)):
+			f.write(accs_data[i] + '\n')
+		f.read()
+		f.close()
 
 	# create a new Google spreadsheet in Drive
-	def createSpreadsheet(self, email, pswd, src, doc):
+	def createSpreadsheet(self, src, doc):
 		# create spreadsheet
 		document = gdata.docs.data.Resource(type='spreadsheet', title=doc)
 		document = self.docs_client.CreateResource(document)
@@ -51,23 +84,25 @@ class SpreadsheetScript():
 		
 	#Prints the data in the worksheet
 	def printData(self):
-		feed = self.client.GetListFeed(self.sheet_key, self.wksht_id)
+		feed = self.client.get_list_feed(self.sheet_key, self.wksht_id)
 		# print field titles of data
+		records = []
 		for row in feed.entry:
-			for key in row.custom:
-				print key+'\t\t',
-			print
-			break
-		
+			records.append(row.to_dict())
+			
+		# print headers
+		for ky in records[0].keys():
+			print ky,
+		print
 		# print records in each row
-		for row in feed.entry:
-			for key in row.custom:
-				print "%s" % (row.custom[key].text)+'\t\t',
+		for i in range(len(records)):
+			for ky in records[i].keys():
+				print records[i][ky],
 			print
 	
 	# return a list of spreadsheets titles
 	def getSpreadsheetsTitles(self):
-		feed = self.client.GetSpreadsheetsFeed()
+		feed = self.client.get_spreadsheets()
 		spdsheets = []
 		for doc in feed.entry:
 			spsheets.append(doc.title.text)
@@ -81,7 +116,7 @@ class SpreadsheetScript():
 	
 	#Returns the spreadsheet key for docTitle
 	def getSpreadsheetKey(self, docTitle):
-		feed = self.client.GetSpreadsheetsFeed()
+		feed = self.client.get_spreadsheets()
 		for doc in feed.entry:
 			if doc.title.text == docTitle:
 				self.sheet_key = doc.id.text.rsplit('/', 1)[1]
@@ -90,7 +125,7 @@ class SpreadsheetScript():
 	
 	# returns all worksheet IDs of a spreadsheet as a list
 	def getWorksheetIds(self, s_key):
-		feed = self.client.GetWorksheetsFeed(s_key)
+		feed = self.client.get_worksheets(s_key)
 		wksheets = []
 		for sht in feed.entry:
 			wksheets.append(sht.id.text.rsplit('/',1)[1])
@@ -98,7 +133,7 @@ class SpreadsheetScript():
 		
 	#Returns a list of worksheet titles
 	def getWorksheetTitles(self, s_key):
-		feed = self.client.GetWorksheetsFeed(s_key)
+		feed = self.client.get_worksheets(s_key)
 		wksheets = []
 		for sht in feed.entry:
 			wksheets.append(sht.title.text)
@@ -111,7 +146,7 @@ class SpreadsheetScript():
 	def deleteRecord(self, row):
 		cnfrm = raw_input('Confim deleting record '+str(row)+' (y/n): ')
 		if cnfrm.lower() == 'y':
-			feed = self.client.GetListFeed(self.sheet_key, self.wksht_id)
+			feed = self.client.get_list_feed(self.sheet_key, self.wksht_id)
 			self.client.DeleteRow(feed.entry[row-1]) # user enters from 1, but records are numbered from 0
 			print 'Record delete successful'
 		else:
@@ -287,14 +322,11 @@ Main Options
 def main():
 	# check if user has entered the correct options
 	try:
-		opts, args = getopt.getopt(sys.argv[1:], "", ["user=", "pwd=", "src=", "docName=", "print", "del", "help", "new=", "rmv=", "edit", "delVal"])
+		opts, args = getopt.getopt(sys.argv[1:], "", ["src=", "docName=", "print", "del", "help", "new=", "rmv=", "edit", "delVal"])
 	except getopt.GetoptError, e:
 		print "python spreadsheetScript.py --help. For help:", e, "\n"
 		sys.exit(2)
 	
-	# default username and password to empty strings
-	user = ''
-	pwd =''
 	src = 'Default'
 	doc = ''
 	new_doc = ''
@@ -306,11 +338,7 @@ def main():
 	delVal = False
 	# get user and pwd values provided by user into their respective variables	
 	for opt, val in opts:
-		if opt == "--user":
-			user = val
-		elif opt == "--pwd":
-			pwd = val
-		elif opt == "--src":
+		if opt == "--src":
 			src = val
 		elif opt == "--docName":
 			doc = val
@@ -329,21 +357,18 @@ def main():
 		elif opt == "--delVal":
 			delVal = True
 	
-	# validate user and pwd values, if any is empty, terminate script		
-	if (user == '' or pwd == '') and not hlp:
-		print "python spreadsheetScript.py --user [username] --pwd [password] --src [source] --docName [document Title]"
-		sys.exit(2)
-	elif hlp == True:	# if user added the help option, display script documentation
+	# validate user and pwd values, if any is empty, terminate script
+	if hlp == True:	# if user added the help option, display script documentation
 		SpreadsheetScript.getHelp()
 		sys.exit(2)
 	elif new_doc != '':
 		# create a new spreadsheet document with string in new_doc variable
-		smclient = SpreadsheetScript(user, pwd, src)
-		smclient.createSpreadsheet(user, pwd, src, new_doc)
+		smclient = SpreadsheetScript(src)
+		smclient.createSpreadsheet(src, new_doc)
 		doc = new_doc
 	else:
 		# create SpreadsheetScript instance with user and pwd fetched	
-		smclient = SpreadsheetScript(user, pwd, src)
+		smclient = SpreadsheetScript(src)
 	
 	loop  = True
 	

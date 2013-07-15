@@ -279,20 +279,20 @@ class SpreadsheetScript():
 			for h in range(1, len(rowAndVal[i])):
 				self.client.UpdateCell(row = row, col = i, inputValue = rowAndVal[i[h]], key = self.sheet_key, wksht_id = self.wksht_id )
 
-	def updateCol(self,docName, colAndVal, wks = 0):
+	def updateCol(self, colAndVal):
 		#Overwrites the values in the column with the given values
 		for i in range(len(colAndVal)):
 			col = int(colAndVal[i[0]])
 			for h in range(1, len(colAndVal[i])):
 				self.client.UpdateCell(row = i+1, col = col, inputValue = colAndVal[i[h]], key = self.sheet_key, wksht_id = self.wksht_id )
 	
-	def deleteCellValue(self, docName, cells, wks = 0):
+	def deleteCellValue(self, cells):
 		#Puts an empty string in the specified cell
 		for cell in cells:
 			cell = cell.split(',')
 			self.client.UpdateCell(row = int(cell[0]), col = int(cell[0]), inputValue = None, key = self.sheet_key, wksht_id = self.wksht_id )
 	
-	def deleteRowValues(self, docName, rows, wks = 0):
+	def deleteRowValues(self, rows):
 		#Puts an empty string in the cells on the specified row
 		for row in rows:
 			row = int(row)

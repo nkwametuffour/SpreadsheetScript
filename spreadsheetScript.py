@@ -1,5 +1,4 @@
 #!/usr/bin/python
-
 import gdata.spreadsheet.service
 import gdata
 import gdata.client
@@ -181,14 +180,17 @@ class SpreadsheetScript():
 	def selectWorksheet(self, s_key, index):
 		return self.getWorksheetIds(s_key)[index]
 
-	def deleteRecord(self, row):
-		cnfrm = raw_input('Confim deleting record '+str(row)+' (y/n): ')
-		if cnfrm.lower() == 'y':
+	def deleteRecord(self, rows):
+		#cnfrm = raw_input('Confim deleting record '+str(row)+' (y/n): ')
+		#if cnfrm.lower() == 'y':
+		for row in rows:
+			row = int(row)
 			feed = self.client.get_list_feed(self.sheet_key, self.wksht_id)
 			self.client.DeleteRow(feed.entry[row-1]) # user enters from 1, but records are numbered from 0
-			print 'Record delete successful'
-		else:
-			print 'Record delete unsuccessful'
+		print 'Record delete successful'
+		#	print 'Record delete successful'
+		#else:
+		#	print 'Record delete unsuccessful'
 			
 	#Sends mail to the user
 	def sendMail(success = True):
@@ -265,15 +267,17 @@ class SpreadsheetScript():
 			sef.deleteCellValue(docmnt, cell[0], cell[1], wkid-1)
 				
 		
-	def updateCell(self, docName, row, col, new_value, wks = 0):
+	def updateCell(self, docName, cellAndVal, wks = 0):
 		#Overwrites the value in the cell specified with new_value
 		self.spreadsheet = self.gs_client.open(docName)
 		self.worksheet = self.spreadsheet.get_worksheet(wks)
 		#print "This is the value in that current cell :",
 		#print self.worksheet.cell(row,col).value
-		self.worksheet.update_cell(row,col,new_value)
+		for i in cellAndVal:
+			cell = cell.split(',')
+			self.worksheet.update_cell(int(cell[0]),int(cell[1]),cell[2])
 	
-	def updateRow(self, docName, row, values, wks = 0):
+	def updateRow(self, docName, rowAndVal, wks = 0):
 		#Overwrites the values in the row with the given values
 		self.spreadsheet = self.gs_client.open(docName)
 		self.worksheet = self.spreadsheet.get_worksheet(wks)
@@ -282,46 +286,56 @@ class SpreadsheetScript():
 		#for each in list_of_values :
 		#	print each," ",
 		#print "\n",	
-		for i in range(len(values)):
-			self.worksheet.update_cell(row,i+1,values[i])
+		for i in range(len(rowAndVal)):
+			row = int(rowAndVal[i[0]])
+			for h in range(1, len(rowAndVal[i])):
+				self.worksheet.update_cell(row,i,rowAndVal[i[h]])
 	
-	def updateCol(self,docName, col, values, wks = 0):
+	def updateCol(self,docName, colAndVal, wks = 0):
 		#Overwrites the values in the column with the given values
 		self.spreadsheet = self.gs_client.open(docName)
 		self.worksheet = self.spreadsheet.get_worksheet(wks)
 		#print "This would empty the specified column of these values:\n",
 		#list_of_values=self.worksheet.col_values(col)
 		#print list_of_values
-		for i in range(len(values)):
-			self.worksheet.update_cell(i+2,col,values[i])
+		for i in range(len(colAndVal)):
+			col = int(colAndVal[i[0]])
+			for h in range(1, len(colAndVal[i])):
+				self.worksheet.update_cell(i+1,col,colAndVal[i[h]])
 	
-	def deleteCellValue(self, docName, row, col, wks = 0):
+	def deleteCellValue(self, docName, cells, wks = 0):
 		#Puts an empty string in the specified cell
 		self.spreadsheet = self.gs_client.open(docName)
 		self.worksheet = self.spreadsheet.get_worksheet(wks)
 		#print "This would empty your specified cell of this current value :",
 		#print self.worksheet.cell(x,y).value
-		self.worksheet.update_cell(row,col,"")
+		for cell in cells:
+			cell = cell.split(',')
+			self.worksheet.update_cell(int(cell[0]),int(cell[1]),"")
 	
-	def deleteRowValues(self, docName, row, wks = 0):
+	def deleteRowValues(self, docName, rows, wks = 0):
 		#Puts an empty string in the cells on the specified row
 		self.spreadsheet = self.gs_client.open(docName)
 		self.worksheet = self.spreadsheet.get_worksheet(wks)
-		print "This would empty the specified row of these values:\n",
-		list_of_values=self.worksheet.row_values(row)
-		print list_of_values
-		for i in range(1,len(list_of_values)):
-			self.worksheet.update_cell(row,i,"")
+		#print "This would empty the specified row of these values:\n",
+		for row in rows:
+			row = int(row)
+			list_of_values=self.worksheet.row_values(row)
+			#print list_of_values
+			for i in range(1,len(list_of_values)):
+				self.worksheet.update_cell(row,i,"")
 	
-	def deleteColValues(self, docName, col, wks = 0):
+	def deleteColValues(self, docName, cols, wks = 0):
 		#Puts an empty string in the cells on the specified column
 		self.spreadsheet = self.gs_client.open(docName)
 		self.worksheet = self.spreadsheet.get_worksheet(wks)
-		print "This would empty the specified column of these values:\n",
-		list_of_values=self.worksheet.col_values(col)
-		print list_of_values
-		for i in range(1,len(list_of_values)):
-			self.worksheet.update_cell(i,col,"")
+		#print "This would empty the specified column of these values:\n",
+		for col in cols:
+			col = int(col)
+			list_of_values=self.worksheet.col_values(col)
+			#print list_of_values
+			for i in range(1,len(list_of_values)):
+				self.worksheet.update_cell(i,col,"")
 			
 	# prints script documentation
 	@staticmethod
@@ -365,73 +379,127 @@ Main Options
 	"""
 	
 def main():
+	src = False
+	docName = False
+	worksheet = False
+	prnt = False
+	hlp = False
+	new = False
+	rmv = False
+	inRow = False
+	inCol = False
+	inCell = False
+	delRow = False
+	delRowVal = False
+	delColVal = False
+	delCellVal= False
+	
 	# check if user has entered the correct options
 	try:
-		opts, args = getopt.getopt(sys.argv[1:], "", ["src=", "docName=", "print", "del", "help", "new=", "rmv=", "edit", "delVal"])
+		opts, args = getopt.getopt(sys.argv[1:], "", ["src=", "docName=", "worksheet=", "print", "help", "new=", "rmv=", "inRow=", "inCol=", "inCell=", "delRow=", "delRowVal=", "delColVal=", "delCellVal=", ])
 	except getopt.GetoptError, e:
 		print "python spreadsheetScript.py --help. For help:", e, "\n"
 		sys.exit(2)
 	
-	src = 'Default'
-	doc = ''
-	new_doc = ''
-	rm_doc = ''
-	delete = False	# delete option set to empty string by default, sets (row, column) to delete
-	prnt = False	# print option set to False by default
-	hlp = False	# help option set to False by default
-	edit = False
-	delVal = False
+	
 	# get user and pwd values provided by user into their respective variables	
+	worksheetVal = 0
+	srcVal = "Default"
 	for opt, val in opts:
 		if opt == "--src":
-			src = val
+			src = True
+			srcVal = val
 		elif opt == "--docName":
-			doc = val
-		elif opt == "--del":
-			delete = True	# delete option sets row to delete to (row, column)
+			docName = True
+			docNameVal = val
+		elif opt == "--worksheet":
+			worksheet = True	# delete option sets row to delete to (row, column)
+			try:
+				worksheetVal = int(val)
+			except:
+				print "--worksheet accepts only integers"
+				SpreadsheetScript.getHelp()
+				sys.exit()
 		elif opt == "--print":
 			prnt = True	# print option set to true, if the option is added
 		elif opt == "--help":
 			hlp = True	# help option set to true, if the option is added
 		elif opt == "--new":
-			new_doc = val
+			new = True
+			newVal = val
 		elif opt == "--rmv":
-			rm_doc = val	# title of document to remove
-		elif opt == "--edit":
-			edit = True
-		elif opt == "--delVal":
-			delVal = True
+			rmv = True	
+			rmvVal = val # title of document to remove
+		elif opt == "--inRow":
+			inRow = True
+			inRowVal = val
+		elif opt == "--inCol":
+			inCol = True
+			inColVal = val
+		elif opt == "--inCell":
+			inCell = True
+			inCellVal = val
+		elif opt == "--delRow":
+			delRow = True
+			delRowVal = val
+		elif opt == "--delRowVal":
+			delRowVal = True
+			delRowValVal = val
+		elif opt == "--delColVal":
+			delColVal = True
+			delColValVal = val
+		elif opt == "--delCellVal":
+			delCellVal = True
+			delCellValVal = val
 	
-	# validate user and pwd values, if any is empty, terminate script
-	if hlp == True:	# if user added the help option, display script documentation
+	
+	if hlp == True:
 		SpreadsheetScript.getHelp()
-		sys.exit(2)
-	elif new_doc != '':
-		# create a new spreadsheet document with string in new_doc variable
-		smclient = SpreadsheetScript(src)
-		smclient.createSpreadsheet(new_doc)
-		doc = new_doc
+		sys.exit()
 	else:
-		# create SpreadsheetScript instance with user and pwd fetched	
-		smclient = SpreadsheetScript(src)
+		if src == True:
+			if not (docName == True and worksheet == True):
+				print "You have to specify a document name and worksheet"
+				SpreadsheetScript.getHelp()
+				sys.exit()
+		if worksheet == True or prnt==True or inRow==True or inCol==True or inCell==True or delRow==True or delRowVal==True or delColVal==True or delCellVal==True:
+			if docName==False:
+				print "Please specify a document Title"
+				SpreadsheetScript.getHelp()
+				sys.exit()
+			
+	if new == True and docName == False:
+		docNameVal = newVal
 	
-	loop  = True
+	client = SpreadsheetScript(srcVal)
 	
-	# passing document title, delete, and prnt options to method
-	while loop:
-		smclient.flow(doc, rm_doc, delete, prnt, edit, delVal)
-		choice = (raw_input('Continue? y/n : ')).lower()
-		if not choice == 'y':
-			loop = False
-			try:
-				sendMail(True)
-			except:
-				pass	
-		else:
-			title = (raw_input('Different spreadsheet? y/n: ')).lower()
-			if title == 'y':
-				title = raw_input('Spreadsheet Title: ')
-				doc = title
+	
+	if prnt == True:
+		client.printData()
+	if new == True:
+		client.createSpreadsheet(newVal)
+	if rmv == True:
+		client.deleteSpreadsheet(rmvVal)
+	if inRow == True:
+		pass
+	if inCol == True:
+		pass
+	if inCell == True:
+		inCellVal = inCellVal.split(';')
+		client.updateCell(docNameVal, inCellVal, worksheetVal)
+	if delRow == True:
+		delRowVal = delRowVal.split(';')
+		client.deleteRecord(delRowVal)
+	if delRowVal == True:
+		pass
+	if delColVal == True:
+		pass
+	if delCellVal == True:
+		inCellVal == inCellVal.split(';')
+		client.deleteCellValue(docNameVal, inCellVal, worksheetVal)
+	
+	
+	
 
 # if script is being run as a standalone application, its name attribute is __main__
 if __name__ == '__main__':

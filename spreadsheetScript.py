@@ -182,15 +182,14 @@ class SpreadsheetScript():
 
 	def deleteRecord(self, rows):
 		#cnfrm = raw_input('Confim deleting record '+str(row)+' (y/n): ')
-		#if cnfrm.lower() == 'y':
-		for row in rows:
-			row = int(row)
-			feed = self.client.get_list_feed(self.sheet_key, self.wksht_id)
-			self.client.DeleteRow(feed.entry[row-1]) # user enters from 1, but records are numbered from 0
-		print 'Record delete successful'
-		#	print 'Record delete successful'
-		#else:
-		#	print 'Record delete unsuccessful'
+		if cnfrm.lower() == 'y':
+			for row in rows:
+				row = int(row)
+				feed = self.client.GetListFeed(self.sheet_key, self.wksht_id)
+				self.client.DeleteRow(feed.entry[row-1]) # user enters from 1, but records are numbered from 0
+			print 'Record delete successful'
+		else:
+			print 'Record delete unsuccessful'
 			
 	#Sends mail to the user
 	def sendMail(success = True):
@@ -212,7 +211,7 @@ class SpreadsheetScript():
 		# if rm_doc is not an empty string, delete spreadsheet with that title
 		if rm_doc != '':
 			self.deleteSpreadsheet(rm_doc)
-			sys.exit(2)	# may be taken out, we may ask user if they want to create a new spreadsheet or work with existing spreadsheet
+			sys.exit(0)	# may be taken out, we may ask user if they want to create a new spreadsheet or work with existing spreadsheet
 		
 		# if docmnt passed is not an empty string, get its key for use
 		if docmnt != '':
@@ -242,23 +241,23 @@ class SpreadsheetScript():
 		#if edit is set to True,
 		if edit:
 			choice = (raw_input('Enter row to edit a row, col to edit a col and cell to edit a cell: ')).lower().strip()
-			if choice == 'row':
+			if choice.strip() == 'row':
 				row = input('Enter row number: ')
 				values = raw_input('Enter values in order (Example 1,2,3): ')
 				values = values.split(',')
-				self.updateRow(docmnt, row, values, wkid -1)
+				self.updateRow(row, values)
 				self.printData()
-			elif choice == 'col':
+			elif choice.strip() == 'col':
 				col = input('Enter column number: ')
 				values = raw_input('Enter values in order (Example 1,2,3): ')
 				values = values.split(',')
-				self.updateCol(docmnt, col, values, wkid -1)
+				self.updateCol( col, values)
 				self.printData()
-			elif choice == 'cell':
+			elif choice.strip() == 'cell':
 				cell = raw_input('Enter row,column,value in that order: ')
 				#value = raw_input('Cell value: ')
 				cell = cell.split(',')
-				self.updateCell(docmnt, cell[0],cell[1],cell[2], wkid -1)
+				self.updateCell(cell[0], cell[1], cell[2])
 				self.printData()
 		
 		if delVal:
@@ -267,76 +266,51 @@ class SpreadsheetScript():
 			sef.deleteCellValue(docmnt, cell[0], cell[1], wkid-1)
 				
 		
-	def updateCell(self, docName, cellAndVal, wks = 0):
+	def updateCell(self, cellAndVal):
 		#Overwrites the value in the cell specified with new_value
-		self.spreadsheet = self.gs_client.open(docName)
-		self.worksheet = self.spreadsheet.get_worksheet(wks)
-		#print "This is the value in that current cell :",
-		#print self.worksheet.cell(row,col).value
-		for i in cellAndVal:
-			cell = cell.split(',')
-			self.worksheet.update_cell(int(cell[0]),int(cell[1]),cell[2])
+		for each in cellAndVal:
+			cell = each.split(',')
+			self.client.UpdateCell(row = int(cell[0]), col = int(cell[1]), inputValue = cell[2],  key = self.sheet_key, wksht_id = self.wksht_id )
 	
-	def updateRow(self, docName, rowAndVal, wks = 0):
+	def updateRow(self, rowAndVal):
 		#Overwrites the values in the row with the given values
-		self.spreadsheet = self.gs_client.open(docName)
-		self.worksheet = self.spreadsheet.get_worksheet(wks)
-		#list_of_values=self.worksheet.row_values(row)
-		#print "These are the current values in that row: "
-		#for each in list_of_values :
-		#	print each," ",
-		#print "\n",	
 		for i in range(len(rowAndVal)):
 			row = int(rowAndVal[i[0]])
 			for h in range(1, len(rowAndVal[i])):
-				self.worksheet.update_cell(row,i,rowAndVal[i[h]])
-	
+				self.client.UpdateCell(row = row, col = i, inputValue = rowAndVal[i[h]], key = self.sheet_key, wksht_id = self.wksht_id )
+
 	def updateCol(self,docName, colAndVal, wks = 0):
 		#Overwrites the values in the column with the given values
-		self.spreadsheet = self.gs_client.open(docName)
-		self.worksheet = self.spreadsheet.get_worksheet(wks)
-		#print "This would empty the specified column of these values:\n",
-		#list_of_values=self.worksheet.col_values(col)
-		#print list_of_values
 		for i in range(len(colAndVal)):
 			col = int(colAndVal[i[0]])
 			for h in range(1, len(colAndVal[i])):
-				self.worksheet.update_cell(i+1,col,colAndVal[i[h]])
+				self.client.UpdateCell(row = i+1, col = col, inputValue = colAndVal[i[h]], key = self.sheet_key, wksht_id = self.wksht_id )
 	
 	def deleteCellValue(self, docName, cells, wks = 0):
 		#Puts an empty string in the specified cell
-		self.spreadsheet = self.gs_client.open(docName)
-		self.worksheet = self.spreadsheet.get_worksheet(wks)
-		#print "This would empty your specified cell of this current value :",
-		#print self.worksheet.cell(x,y).value
 		for cell in cells:
 			cell = cell.split(',')
-			self.worksheet.update_cell(int(cell[0]),int(cell[1]),"")
+			self.client.UpdateCell(row = int(cell[0]), col = int(cell[0]), inputValue = None, key = self.sheet_key, wksht_id = self.wksht_id )
 	
 	def deleteRowValues(self, docName, rows, wks = 0):
 		#Puts an empty string in the cells on the specified row
-		self.spreadsheet = self.gs_client.open(docName)
-		self.worksheet = self.spreadsheet.get_worksheet(wks)
-		#print "This would empty the specified row of these values:\n",
 		for row in rows:
 			row = int(row)
 			list_of_values=self.worksheet.row_values(row)
 			#print list_of_values
 			for i in range(1,len(list_of_values)):
 				self.worksheet.update_cell(row,i,"")
-	
-	def deleteColValues(self, docName, cols, wks = 0):
+				self.client.UpdateCell(row = row, col = i, inputValue = None, key = self.sheet_key, wksht_id = self.wksht_id )
+	#on hold for now
+	'''	def deleteColValues(self, docName, cols, wks = 0):
 		#Puts an empty string in the cells on the specified column
-		self.spreadsheet = self.gs_client.open(docName)
-		self.worksheet = self.spreadsheet.get_worksheet(wks)
-		#print "This would empty the specified column of these values:\n",
 		for col in cols:
 			col = int(col)
 			list_of_values=self.worksheet.col_values(col)
 			#print list_of_values
 			for i in range(1,len(list_of_values)):
 				self.worksheet.update_cell(i,col,"")
-			
+	'''			
 	# prints script documentation
 	@staticmethod
 	def getHelp():
@@ -455,7 +429,7 @@ def main():
 	
 	if hlp == True:
 		SpreadsheetScript.getHelp()
-		sys.exit()
+		sys.exit(0)
 	else:
 		if src == True:
 			if not (docName == True and worksheet == True):
@@ -497,10 +471,7 @@ def main():
 	if delCellVal == True:
 		inCellVal == inCellVal.split(';')
 		client.deleteCellValue(docNameVal, inCellVal, worksheetVal)
-	
-	
-	
-
+		
 # if script is being run as a standalone application, its name attribute is __main__
 if __name__ == '__main__':
 	# execute script

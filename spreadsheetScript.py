@@ -392,19 +392,27 @@ def main():
 	worksheet = False
 	prnt = False
 	hlp = False
-	new = False
-	rmv = False
-	inRow = False
-	inCol = False
-	inCell = False
-	delRow = False
-	delRowVal = False
-	delColVal = False
-	delCellVal= False
+	#iRow = False
+	iRowVal = False
+	iColVal = False
+	iCellVal = False
+	dRowVal = False
+	dColVal = False
+	dCellVal= False
+	dRow = False
+	dWS = False
+	dSS = False
+	cWS = False
+	cSS = False
+	nSS = False
+	nWS = False
+	ext = False
+	
 	
 	# check if user has entered the correct options
 	try:
-		opts, args = getopt.getopt(sys.argv[1:], "", ["src=", "docName=", "worksheet=", "print", "help", "new=", "rmv=", "inRow=", "inCol=", "inCell=", "delRow=", "delRowVal=", "delColVal=", "delCellVal=", ])
+		opts, args = getopt.getopt(sys.argv[1:], "", ["src=", "docName=", "worksheet=", "pirnt", "help", "iRowVal=", "iColVal=", 
+	"iCellVal=", "dRowVal=", "dColVal=", "dCellVal=", "dRow=", "dWS=", "dSS=", "cWS=", "cSS=", "nSS=", "nWS=", "eixt"])
 	except getopt.GetoptError, e:
 		print "python spreadsheetScript.py --help. For help:", e, "\n"
 		sys.exit(2)
@@ -421,67 +429,76 @@ def main():
 			docName = True
 			docNameVal = val
 		elif opt == "--worksheet":
-			worksheet = True	# delete option sets row to delete to (row, column)
-			try:
-				worksheetVal = int(val)-1
-			except:
-				print "--worksheet accepts only integers"
-				SpreadsheetScript.getHelp()
-				sys.exit()
+			worksheet = True
+			worksheetVal = val
 		elif opt == "--print":
-			prnt = True	# print option set to true, if the option is added
+			prnt = True
 		elif opt == "--help":
-			hlp = True	# help option set to true, if the option is added
-		elif opt == "--new":
+			hlp = True
+		elif opt == "--nWS":
 			new = True
-			newVal = val
-		elif opt == "--rmv":
-			rmv = True	
-			rmvVal = val # title of document to remove
-		elif opt == "--inRow":
-			inRow = True
-			inRowVal = val
-		elif opt == "--inCol":
-			inCol = True
-			inColVal = val
-		elif opt == "--inCell":
-			inCell = True
-			inCellVal = val
-		elif opt == "--delRow":
-			delRow = True
-			delRowVal = val
-		elif opt == "--delRowVal":
-			delRowVal = True
-			delRowValVal = val
-		elif opt == "--delColVal":
-			delColVal = True
-			delColValVal = val
-		elif opt == "--delCellVal":
-			delCellVal = True
-			delCellValVal = val
+			nWSVal = val
+		elif opt == "--nSS":
+			new = True
+			nSSVal = val
+		elif opt == "--iRowVal":
+			iRowVal = True
+			iRowValVal = val
+		elif opt == "--iColVal":
+			iColVal = True
+			iColValVal = val
+		elif opt == "--iCellVal":
+			iCellVal = True
+			iCellValVal = val
+		elif opt == "--dRowVal":
+			dRowVal = True
+			dRowValVal = val
+		elif opt == "--dColVal":
+			dColVal = True
+			dColValVal = val
+		elif opt == "--dCellVal":
+			dCellVal = True
+			dCellValVal = val
+		elif opt == "--dRow":
+			dRow = True	
+			dRowVal = val
+		elif opt == "--dWS":
+			dWS = True	
+			dWSVal = val
+		elif opt == "--dSS":
+			dSS = True	
+			dSSVal = val
+		elif opt == "--cWS":
+			cWS = True	
+			cWSVal = val
+		elif opt == "--cSS":
+			cSS = True	
+			cSSVal = val
 	
+	#worksheet = True
 	
 	if hlp == True:
 		SpreadsheetScript.getHelp()
 		sys.exit(0)
 	else:
+		if docName == False and nSS == False:
+			print "You have to specify a document or create a new Spreadsheet to work with"
+		if new == True and docName == False:
+			docNameVal = nSSVal
 		if src == True:
-			if not (docName == True and worksheet == True):
-				print "You have to specify a document name and worksheet"
-				SpreadsheetScript.getHelp()
-				sys.exit()
-		if worksheet == True or prnt==True or inRow==True or inCol==True or inCell==True or delRow==True or delRowVal==True or delColVal==True or delCellVal==True:
-			if docName==False:
-				print "Please specify a document Title"
+			if nSS == False:
+				print "You have to specify a new document"
 				SpreadsheetScript.getHelp()
 				sys.exit()
 			
-	if new == True and docName == False:
-		docNameVal = newVal
+	
 	
 	client = SpreadsheetScript(srcVal)
 	client.sheet_key = client.getSpreadsheetKey(docNameVal)
-	client.wksht_id = client.selectWorksheet(client.sheet_key, worksheetVal)
+	if worksheet = True:
+		client.wksht_id = client.getWorksheetIdByName(worksheetVal)
+	else:
+		selectWorksheet(client.sheet_key, worksheetVal)
 	
 	if new == True:
 		client.createSpreadsheet(newVal)

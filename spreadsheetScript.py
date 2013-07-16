@@ -221,6 +221,46 @@ class SpreadsheetScript():
 		else:
 			print 'Record delete unsuccessful'
 			
+	def getOperationColumnNumber(self, operation, code):
+		if operation.lower() == 'subscription':
+			subscription = {'80101':2, '80102':3, '40601':4, '1988':5, '80104 -2nd Del':6, '80104 - low P':7, '80107':8}
+			try:
+				return subscription[code]
+			except KeyError, e:
+				print e
+		elif operation.lower() == 'subscription growth':
+			subscription_growth = {'80101':10, '80102':11, '40601':12, '1988':13, '80104':14}
+			try:
+				return subscription_growth[code]
+			except KeyError, e:
+				print e
+		elif operation.lower() == 'pushed msgs':
+			pushed_msgs = {'80101':16, '80102':17, '40601':18, '1988':19, '80104':20}
+			try:
+				return pushed_msgs[code]
+			except KeyError, e:
+				print e
+		elif operation.lower() == 'successfully billed msgs':
+			success_billed = {'80101':22, '80102':23, '40601':24, '1988':25, '80104 -2nd Del':26, '80104 - low P':27, '80107':28}
+			try:
+				return success_billed[code]
+			except KeyError, e:
+				print e
+		elif operation.lower() == 'success rate':
+			success_rate = {'80101':29, '80102':30, '40601':31, '1988':32, '80104 -2nd Del':33, '80104 - low P':34, '80107':35}
+			try:
+				return success_rate[code]
+			except KeyError, e:
+				print e
+				
+	def getRowNumber(self, string):
+		row_entry = self.client.GetListFeed(self.sheet_key, self.wksht_id)
+		row_ct = 1
+		for entry in row_entry.entry:
+			if string == entry.title.text:
+				return row_ct
+			row_ct += 1
+			
 	#Sends mail to the user
 	def sendMail(self, success = True):
 		server = smtplib.SMTP()
@@ -575,6 +615,9 @@ def main():
 	if ext == True:
 		sys.exit()
 	
+	position = [str(client.getRowNumber('1/5/2013'))+','+str(client.getOperationColumnNumber('subscription','80101'))+','+'67785']
+	print position
+	client.updateCell(position)
 	client.flow()
 		
 # if script is being run as a standalone application, its name attribute is __main__

@@ -474,11 +474,10 @@ def main():
 	nWS = False
 	ext = False
 	
-	
 	# check if user has entered the correct options
 	try:
 		opts, args = getopt.getopt(sys.argv[1:], "", ["src=", "docName=", "worksheet=", "pirnt", "help", "iRowVal=", "iColVal=", 
-	"iCellVal=", "dRowVal=", "dColVal=", "dCellVal=", "dRow=", "dWS=", "dSS=", "nSS=", "nWS=", "eixt"])
+	"iCellVal=", "dRowVal=", "dColVal=", "dCellVal=", "dRow=", "dWS=", "dSS=", "nSS=", "nWS=", "exit"])
 	except getopt.GetoptError, e:
 		print "python spreadsheetScript.py --help. For help:", e, "\n"
 		sys.exit(2)
@@ -588,8 +587,8 @@ def main():
 		client.updateRow(val)
 		#pass
 	if iCellVal == True:
-		inCellVal = inCellVal.split(';')
-		client.updateCell(inCellVal)
+		iCellValVal = iCellValVal.split(';')
+		client.updateCell(iCellValVal)
 	if dRow == True:
 		delRowVal = delRowVal.split(';')
 		client.deleteRecord(delRowVal)
@@ -613,7 +612,7 @@ def main():
 	if prnt == True:
 		client.printData()
 	if ext == True:
-		sys.exit()
+		sys.exit(2)
 	
 	position = [str(client.getRowNumber('1/3/2013'))+','+str(client.getOperationColumnNumber('subscription growth','80102'))+','+'67785']
 	print position

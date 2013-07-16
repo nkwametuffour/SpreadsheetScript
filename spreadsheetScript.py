@@ -239,67 +239,90 @@ class SpreadsheetScript():
 	#Takes in the document name, checks if it exists and asks the user for the worksheet to work with.
 	def flow(self, docmnt):
 		doc = docmnt
-		command = raw_input('>>>')
-		if command[0] = 'i':
-			if command[1:len('CellVal')+1].lower() == 'CellVal'.lower():
-				val = command[command.find('(')+1:command.find(')')]
-				val = val.split(';')
-				self.updateCell(doc, val)
-			elif command[1:len('RowVal')+1].lower() == 'RowVal'.lower():
-				val = command[command.find('(')+1:command.find(')')]
-				val = val.split(';')
-				self.updateRow(doc, val)
-			elif command[1:len('ColVal')+1].lower() == 'ColVal'.lower():
-				val = command[command.find('(')+1:command.find(')')]
-				val = val.split(';')
-				self.updateCol(docmnt, val)
+		con = True
+		while con == True:
+			command = raw_input('>>>')
+			if command[0] == 'i':
+				if command[1:len('CellVal')+1].lower() == 'CellVal'.lower():
+					val = command[command.find('(')+1:command.find(')')]
+					val = val.split(';')
+					self.updateCell(val)
+				elif command[1:len('RowVal')+1].lower() == 'RowVal'.lower():
+					val = command[command.find('(')+1:command.find(')')]
+					val = val.split(';')
+					self.updateRow(val)
+				elif command[1:len('ColVal')+1].lower() == 'ColVal'.lower():
+					val = command[command.find('(')+1:command.find(')')]
+					val = val.split(';')
+					self.updateCol(val)
+				else:
+					print 'Cannot find command: '+command
+				#pass
+			elif command[0] == 'd':
+				if command[1:len('CellVal')+1].lower() == 'CellVal'.lower():
+					val = command[command.find('(')+1:command.find(')')]
+					val = val.split(';')
+					self.deleteCellValue(val)
+				elif command[1:len('RowVal')+1].lower() == 'RowVal'.lower():
+					#val = command[command.find('(')+1:command.find(')')]
+					#val = val.split(';')
+					#self.deleteRowValues(docmnt, val)
+					pass
+				elif command[1:len('ColVal')+1].lower() == 'ColVal'.lower():
+					#val = command[command.find('(')+1:command.find(')')]
+					#val = val.split(';')
+					#self.deleteColValues(docmnt, val)
+					pass
+				elif command[1:len('Row')+1].lower() == 'Row'.lower():
+					val = command[command.find('(')+1:command.find(')')]
+					val = val.split(';')
+					self.deleteRecord(val)
+				elif command[1:len('WS')+1].lower() == 'WS'.lower():
+					val = command[command.find('(')+1:command.find(')')]
+					val = val.split(';')
+					#self.deleteWorsheet(val)
+				elif command[1:len('SS')+1].lower() == 'SS'.lower():
+					val = command[command.find('(')+1:command.find(')')]
+					val = val.split(';')
+					self.deleteSpreadsheet(val)
+				else:
+					print 'Cannot find command: '+command
+				#pass
+			elif command[0] == 'c':
+				if command[1:len('WS')+1].lower() == 'WS'.lower():
+					val = command[command.find('(')+1:command.find(')')].strip()
+					#val = val.split(';')
+					client.wksht_id = client.getWorksheetIdByName(val)
+				elif command[1:len('SS')+1].lower() == 'SS'.lower():
+					val = command[command.find('(')+1:command.find(')')].strip()
+					#val = val.split(';')
+					client.sheet_key = client.getSpreadsheetKey(val)
+				else:
+					print 'Cannot find command: '+command
+				#pass
+			elif command[0] =='n':
+				if command[1:len('WS')+1].lower() == 'WS'.lower():
+					val = command[command.find('(')+1:command.find(')')].strip()
+					#val = val.split(';')
+					#self.createWorksheet(val)
+					pass
+				elif command[1:len('SS')+1].lower() == 'SS'.lower():
+					val = command[command.find('(')+1:command.find(')')].strip()
+					#val = val.split(';')
+					self.createSpreadsheet(val)
+				else:
+					print 'Cannot find command: '+command
+				#pass
 			else:
-				print 'Cannot find command: '+command
-			#pass
-		elif command[0] = 'd':
-			if command[1:len('CellVal')+1].lower() == 'CellVal'.lower():
-				val = command[command.find('(')+1:command.find(')')]
-				val = val.split(';')
-				self.deleteCellValue(docmnt, val)
-			elif command[1:len('RowVal')+1].lower() == 'RowVal'.lower():
-				#val = command[command.find('(')+1:command.find(')')]
-				#val = val.split(';')
-				#self.deleteRowValues(docmnt, val)
-				pass
-			elif command[1:len('ColVal')+1].lower() == 'ColVal'.lower():
-				#val = command[command.find('(')+1:command.find(')')]
-				#val = val.split(';')
-				#self.deleteColValues(docmnt, val)
-				pass
-			elif command[1:len('Row')+1].lower() == 'Row'.lower():
-				val = command[command.find('(')+1:command.find(')')]
-				val = val.split(';')
-				self.deleteRecord(val)
-			elif command[1:len('WS')+1].lower() == 'WS'.lower():
-				val = command[command.find('(')+1:command.find(')')]
-				val = val.split(';')
-				#self.deleteWorsheet(val)
-			elif command[1:len('SS')+1].lower() == 'SS'.lower():
-				val = command[command.find('(')+1:command.find(')')]
-				val = val.split(';')
-				self.deleteSpreadsheet(val)
-			else:
-				print 'Cannot find command: '+command
-			#pass
-		elif command[0] = 'c':
-			elif command[1:len('WS')+1].lower() == 'WS'.lower():
-				val = command[command.find('(')+1:command.find(')')]
-				#val = val.split(';')
-				self.selectWorksheet(val)
-			elif command[1:len('SS')+1].lower() == 'SS'.lower():
-				val = command[command.find('(')+1:command.find(')')]
-				#val = val.split(';')
-				self.deleteSpreadsheet(val)
-			#pass
-		elif command[0] = 'n':
-			pass
-		else:
-			pass
+				if command[0:len('print')+1].lower() == 'print'.lower():
+					self.printData()
+				elif command[0:len('help')+1].lower() == 'help'.lower():
+					self.getHelp()
+				elif command[0:len('exit')+1].lower() == 'exit'.lower():
+					sys.exit
+				else:
+					print 'Cannot find command: '+command
+				#pass
 			
 		
 	def updateCell(self, cellAndVal):
@@ -486,7 +509,7 @@ def main():
 	else:
 		if docName == False and nSS == False:
 			print "You have to specify a document or create a new Spreadsheet to work with"
-		if new == True and docName == False:
+		if nSS == True and docName == False:
 			docNameVal = nSSVal
 		if src == True:
 			if nSS == False:
@@ -501,7 +524,7 @@ def main():
 	if worksheet == True:
 		client.wksht_id = client.getWorksheetIdByName(worksheetVal)
 	else:
-		client.wksht_id = selectWorksheet(client.sheet_key, worksheetVal)
+		client.wksht_id = client.selectWorksheet(client.sheet_key, worksheetVal)
 	
 	if nSS == True:
 		client.createSpreadsheet(newVal)

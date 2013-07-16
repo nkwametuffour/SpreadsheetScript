@@ -344,7 +344,8 @@ class SpreadsheetScript():
 				if command[1:len('WS')+1].lower() == 'WS'.lower():
 					val = command[command.find('(')+1:command.find(')')].strip()
 					#val = val.split(';')
-					#self.createWorksheet(val)
+					w_args = val.split(',')
+					self.addWorksheet(w_args[0], w_args[1], w_args[2])
 					pass
 				elif command[1:len('SS')+1].lower() == 'SS'.lower():
 					val = command[command.find('(')+1:command.find(')')].strip()
@@ -359,7 +360,7 @@ class SpreadsheetScript():
 				elif command[0:len('help')+1].lower() == 'help'.lower():
 					self.getHelp()
 				elif command[0:len('exit')+1].lower() == 'exit'.lower():
-					sys.exit
+					sys.exit(2)
 				else:
 					print 'Cannot find command: '+command
 				#pass
@@ -615,9 +616,9 @@ def main():
 	if ext == True:
 		sys.exit()
 	
-	position = [str(client.getRowNumber('1/3/2013'))+','+str(client.getOperationColumnNumber('subscription growth','80102'))+','+'67785']
+	"""	position = [str(client.getRowNumber('1/3/2013'))+','+str(client.getOperationColumnNumber('subscription growth','80102'))+','+'67785']
 	print position
-	client.updateCell(position)
+	client.updateCell(position)	"""
 	client.flow()
 		
 # if script is being run as a standalone application, its name attribute is __main__

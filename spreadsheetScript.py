@@ -116,7 +116,34 @@ class SpreadsheetScript():
 				else:
 					print 'Delete unsuccessful'
 					break
-		
+	
+	# upload a spreadsheet from from local machine, to Drive with format converted to Drive spreadsheet format
+	def upload_spreadsheet(self, filepath, doctitle):
+		document = gdata.docs.data.Resource(type='spreadsheet', title=doctitle)
+		media = gdata.data.MediaSource()
+		media.SetFileHandle(filepath, 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+		create_uri = gdata.docs.client.RESOURCE_UPLOAD_URI + '?convert=true'
+		upload_doc = self.docs_client.CreateResource(document, create_uri=create_uri, media=media)
+	
+	# add worksheet with specified size to current spreadsheet document
+	def addWorksheet(self, name, row_size, col_size):
+		if name in self.getWorksheetTitles(self.sheet_key):
+			print "Please choose a unique worksheet name\n"
+		else:
+			self.client.AddWorksheet(name, row_size, col_size, self.sheet_key)
+			print 'Worksheet added.'
+	
+	# delete an entire worksheet from the current spreadsheet
+	def deleteWorksheet(self, workshts):
+		for wkid in workshts:
+			worksht_id = self.getWorksheetIdByName(wkid)
+			if worksht_id != None:
+				worksheet = self.client.GetWorksheetsFeed(self.sheet_key, worksht_id)
+				self.client.DeleteWorksheet(worksheet_entry = worksheet)
+				print 'Worksheet deleted.'
+			else:
+				print "Worksheet not found."
+	
 	#Prints the data in the worksheet
 	def printData(self) :
 		feed = self.client.GetListFeed(self.sheet_key, self.wksht_id)
@@ -175,6 +202,13 @@ class SpreadsheetScript():
 	# select from a list of worksheets	
 	def selectWorksheet(self, s_key, index):
 		return self.getWorksheetIds(s_key)[index]
+		
+	def getWorksheetIdByName(self, name):
+		wk_feed = self.client.GetWorksheetsFeed(self.sheet_key)
+		for wksht in wk_feed.entry:
+			if name == wksht.title.text:
+				return wksht.id.text.rsplit('/', 1)[1]
+		return None	# worksheet with title, name, not found
 
 	def deleteRecord(self, rows):
 		#cnfrm = raw_input('Confim deleting record '+str(row)+' (y/n): ')

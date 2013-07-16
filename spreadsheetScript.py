@@ -4,7 +4,6 @@ import gdata
 import gdata.client
 import gdata.docs.client
 import gdata.spreadsheets.client
-import gspread
 import getopt
 import sys
 import os
@@ -47,9 +46,6 @@ class SpreadsheetScript():
 		self.client.email = user
 		self.client.password = pswd
 		self.client.ProgrammaticLogin()
-		
-		# create gspread client instance and login
-		self.gs_client = gspread.login(user, pswd)
 		
 		# create google docs client and login
 		self.docs_client = gdata.docs.client.DocsClient(source=src)
@@ -122,10 +118,10 @@ class SpreadsheetScript():
 					break
 		
 	#Prints the data in the worksheet
-	def printData(self):
+	def printData(self) :
 		feed = self.client.GetListFeed(self.sheet_key, self.wksht_id)
 		# print field titles of data
-		for row in feed.entry:
+		for row in feed.entry :
 			for key in row.custom:
 				print key+'\t\t',
 			print
@@ -448,12 +444,12 @@ def main():
 	client = SpreadsheetScript(srcVal)
 	
 	
-	if prnt == True:
-		client.printData()
 	if new == True:
 		client.createSpreadsheet(newVal)
 	if rmv == True:
 		client.deleteSpreadsheet(rmvVal)
+	if prnt == True:
+		client.printData()
 	if inRow == True:
 		pass
 	if inCol == True:

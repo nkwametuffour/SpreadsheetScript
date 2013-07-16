@@ -255,7 +255,7 @@ class SpreadsheetScript():
 				
 	def getRowNumber(self, string):
 		row_entry = self.client.GetListFeed(self.sheet_key, self.wksht_id)
-		row_ct = 1
+		row_ct = 2
 		for entry in row_entry.entry:
 			if string == entry.title.text:
 				return row_ct
@@ -615,7 +615,7 @@ def main():
 	if ext == True:
 		sys.exit()
 	
-	position = [str(client.getRowNumber('1/5/2013'))+','+str(client.getOperationColumnNumber('subscription','80101'))+','+'67785']
+	position = [str(client.getRowNumber('1/3/2013'))+','+str(client.getOperationColumnNumber('subscription growth','80102'))+','+'67785']
 	print position
 	client.updateCell(position)
 	client.flow()

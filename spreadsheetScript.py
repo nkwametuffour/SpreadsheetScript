@@ -415,7 +415,7 @@ def main():
 		elif opt == "--worksheet":
 			worksheet = True	# delete option sets row to delete to (row, column)
 			try:
-				worksheetVal = int(val)
+				worksheetVal = int(val)-1
 			except:
 				print "--worksheet accepts only integers"
 				SpreadsheetScript.getHelp()
@@ -472,14 +472,15 @@ def main():
 		docNameVal = newVal
 	
 	client = SpreadsheetScript(srcVal)
+	client.sheet_key = client.getSpreadsheetKey(docNameVal)
+	client.wksht_id = client.selectWorksheet(client.sheet_key, worksheetVal)
 	
-	
-	if prnt == True:
-		client.printData()
 	if new == True:
 		client.createSpreadsheet(newVal)
 	if rmv == True:
 		client.deleteSpreadsheet(rmvVal)
+	if prnt == True:
+		client.printData()
 	if inRow == True:
 		pass
 	if inCol == True:

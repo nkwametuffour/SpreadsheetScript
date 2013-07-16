@@ -222,7 +222,7 @@ class SpreadsheetScript():
 			print 'Record delete unsuccessful'
 			
 	#Sends mail to the user
-	def sendMail(success = True):
+	def sendMail(self, success = True):
 		server = smtplib.SMTP()
 		server.connect('smtp.gmail.com', 587)
 		server.ehlo()
@@ -237,64 +237,70 @@ class SpreadsheetScript():
 		server.sendmail('rancardinterns2013@gmail.com', self.client.email, message)
 		
 	#Takes in the document name, checks if it exists and asks the user for the worksheet to work with.
-	def flow(self, docmnt, rm_doc, delete=False, prnt=False, edit=False, delVal=False):
-		# if rm_doc is not an empty string, delete spreadsheet with that title
-		if rm_doc != '':
-			self.deleteSpreadsheet(rm_doc)
-			sys.exit(0)	# may be taken out, we may ask user if they want to create a new spreadsheet or work with existing spreadsheet
-		
-		# if docmnt passed is not an empty string, get its key for use
-		if docmnt != '':
-			self.sheet_key = self.getSpreadsheetKey(docmnt)
-		
-		if self.sheet_key == '':
-			print "File doesn't exist"
-			sys. exit(2)
-		wkshts = self.getWorksheetTitles(self.sheet_key)
-		for i in range(len(wkshts)):
-			print i+1, wkshts[i]
-		wkid = input("Select worksheet: ")
-		try:
-			self.wksht_id = self.selectWorksheet(self.sheet_key, wkid-1)
-		except IndexError:
-			print "That index is out of range. Please input again"
-			self.wksht_id = self.selectWorksheet(self.sheet_key, wkid-1)
+	def flow(self, docmnt):
+		doc = docmnt
+		command = raw_input('>>>')
+		if command[0] = 'i':
+			if command[1:len('CellVal')+1].lower() == 'CellVal'.lower():
+				val = command[command.find('(')+1:command.find(')')]
+				val = val.split(';')
+				self.updateCell(doc, val)
+			elif command[1:len('RowVal')+1].lower() == 'RowVal'.lower():
+				val = command[command.find('(')+1:command.find(')')]
+				val = val.split(';')
+				self.updateRow(doc, val)
+			elif command[1:len('ColVal')+1].lower() == 'ColVal'.lower():
+				val = command[command.find('(')+1:command.find(')')]
+				val = val.split(';')
+				self.updateCol(docmnt, val)
+			else:
+				print 'Cannot find command: '+command
+			#pass
+		elif command[0] = 'd':
+			if command[1:len('CellVal')+1].lower() == 'CellVal'.lower():
+				val = command[command.find('(')+1:command.find(')')]
+				val = val.split(';')
+				self.deleteCellValue(docmnt, val)
+			elif command[1:len('RowVal')+1].lower() == 'RowVal'.lower():
+				#val = command[command.find('(')+1:command.find(')')]
+				#val = val.split(';')
+				#self.deleteRowValues(docmnt, val)
+				pass
+			elif command[1:len('ColVal')+1].lower() == 'ColVal'.lower():
+				#val = command[command.find('(')+1:command.find(')')]
+				#val = val.split(';')
+				#self.deleteColValues(docmnt, val)
+				pass
+			elif command[1:len('Row')+1].lower() == 'Row'.lower():
+				val = command[command.find('(')+1:command.find(')')]
+				val = val.split(';')
+				self.deleteRecord(val)
+			elif command[1:len('WS')+1].lower() == 'WS'.lower():
+				val = command[command.find('(')+1:command.find(')')]
+				val = val.split(';')
+				#self.deleteWorsheet(val)
+			elif command[1:len('SS')+1].lower() == 'SS'.lower():
+				val = command[command.find('(')+1:command.find(')')]
+				val = val.split(';')
+				self.deleteSpreadsheet(val)
+			else:
+				print 'Cannot find command: '+command
+			#pass
+		elif command[0] = 'c':
+			elif command[1:len('WS')+1].lower() == 'WS'.lower():
+				val = command[command.find('(')+1:command.find(')')]
+				#val = val.split(';')
+				self.selectWorksheet(val)
+			elif command[1:len('SS')+1].lower() == 'SS'.lower():
+				val = command[command.find('(')+1:command.find(')')]
+				#val = val.split(';')
+				self.deleteSpreadsheet(val)
+			#pass
+		elif command[0] = 'n':
+			pass
+		else:
+			pass
 			
-		#if prnt is set to True, prints the contents of the specified worksheet to the screen
-		if prnt and docmnt != '':
-			self.printData()
-
-		#if delete is set to True, do delete operation
-		if delete:
-			row = input('Enter row to delete: ')
-			self.deleteRecord(row)
-		#if edit is set to True,
-		if edit:
-			choice = (raw_input('Enter row to edit a row, col to edit a col and cell to edit a cell: ')).lower().strip()
-			if choice.strip() == 'row':
-				row = input('Enter row number: ')
-				values = raw_input('Enter values in order (Example 1,2,3): ')
-				values = values.split(',')
-				self.updateRow(row, values)
-				self.printData()
-			elif choice.strip() == 'col':
-				col = input('Enter column number: ')
-				values = raw_input('Enter values in order (Example 1,2,3): ')
-				values = values.split(',')
-				self.updateCol( col, values)
-				self.printData()
-			elif choice.strip() == 'cell':
-				cell = raw_input('Enter row,column,value in that order: ')
-				#value = raw_input('Cell value: ')
-				cell = cell.split(',')
-				self.updateCell(cell[0], cell[1], cell[2])
-				self.printData()
-		
-		if delVal:
-			cell = raw_input("Enter the cell's row, column in that order.(Example 2,3): ")
-			cell = (cell.strip()).split(',')
-			sef.deleteCellValue(docmnt, cell[0], cell[1], wkid-1)
-				
 		
 	def updateCell(self, cellAndVal):
 		#Overwrites the value in the cell specified with new_value
@@ -546,7 +552,7 @@ def main():
 	if ext == True:
 		sys.exit()
 	
-	client.flow
+	client.flow()
 		
 # if script is being run as a standalone application, its name attribute is __main__
 if __name__ == '__main__':

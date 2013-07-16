@@ -237,8 +237,8 @@ class SpreadsheetScript():
 		server.sendmail('rancardinterns2013@gmail.com', self.client.email, message)
 		
 	#Takes in the document name, checks if it exists and asks the user for the worksheet to work with.
-	def flow(self, docmnt):
-		doc = docmnt
+	def flow(self):
+#		doc = docmnt
 		con = True
 		while con == True:
 			command = raw_input('>>>')

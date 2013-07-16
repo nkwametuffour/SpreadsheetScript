@@ -359,7 +359,7 @@ class SpreadsheetScript():
 				elif command[0:len('help')+1].lower() == 'help'.lower():
 					self.getHelp()
 				elif command[0:len('exit')+1].lower() == 'exit'.lower():
-					sys.exit
+					sys.exit()
 				else:
 					print 'Cannot find command: '+command
 				#pass

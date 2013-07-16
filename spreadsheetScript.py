@@ -402,8 +402,8 @@ def main():
 	dRow = False
 	dWS = False
 	dSS = False
-	cWS = False
-	cSS = False
+	#cWS = False
+	#cSS = False
 	nSS = False
 	nWS = False
 	ext = False
@@ -412,7 +412,7 @@ def main():
 	# check if user has entered the correct options
 	try:
 		opts, args = getopt.getopt(sys.argv[1:], "", ["src=", "docName=", "worksheet=", "pirnt", "help", "iRowVal=", "iColVal=", 
-	"iCellVal=", "dRowVal=", "dColVal=", "dCellVal=", "dRow=", "dWS=", "dSS=", "cWS=", "cSS=", "nSS=", "nWS=", "eixt"])
+	"iCellVal=", "dRowVal=", "dColVal=", "dCellVal=", "dRow=", "dWS=", "dSS=", "nSS=", "nWS=", "eixt"])
 	except getopt.GetoptError, e:
 		print "python spreadsheetScript.py --help. For help:", e, "\n"
 		sys.exit(2)
@@ -468,12 +468,12 @@ def main():
 		elif opt == "--dSS":
 			dSS = True	
 			dSSVal = val
-		elif opt == "--cWS":
+		'''elif opt == "--cWS":
 			cWS = True	
 			cWSVal = val
 		elif opt == "--cSS":
 			cSS = True	
-			cSSVal = val
+			cSSVal = val'''
 	
 	#worksheet = True
 	
@@ -495,34 +495,45 @@ def main():
 	
 	client = SpreadsheetScript(srcVal)
 	client.sheet_key = client.getSpreadsheetKey(docNameVal)
-	if worksheet = True:
+	if worksheet == True:
 		client.wksht_id = client.getWorksheetIdByName(worksheetVal)
 	else:
 		selectWorksheet(client.sheet_key, worksheetVal)
 	
-	if new == True:
+	if nSS == True:
 		client.createSpreadsheet(newVal)
-	if rmv == True:
-		client.deleteSpreadsheet(rmvVal)
-	if prnt == True:
-		client.printData()
-	if inRow == True:
+	if nWS == True:
+		#client.createWorksheet()
 		pass
-	if inCol == True:
+	if iRowVal == True:
 		pass
-	if inCell == True:
+	if iColVal == True:
+		pass
+	if iCellVal == True:
 		inCellVal = inCellVal.split(';')
 		client.updateCell(docNameVal, inCellVal, worksheetVal)
-	if delRow == True:
+	if dRow == True:
 		delRowVal = delRowVal.split(';')
 		client.deleteRecord(delRowVal)
-	if delRowVal == True:
+	if dRowVal == True:
 		pass
-	if delColVal == True:
+	if dColVal == True:
 		pass
-	if delCellVal == True:
+	if dCellVal == True:
 		inCellVal == inCellVal.split(';')
 		client.deleteCellValue(docNameVal, inCellVal, worksheetVal)
+	if dSS == True:
+		client.deleteSpreadsheet(rmvVal)
+	if dWS == True:
+		val = []
+		val.append(dWSVal)
+		client.deleteWorksheet(val)
+	if prnt == True:
+		client.printData()
+	if ext == True:
+		sys.exit()
+	
+	client.flow
 		
 # if script is being run as a standalone application, its name attribute is __main__
 if __name__ == '__main__':

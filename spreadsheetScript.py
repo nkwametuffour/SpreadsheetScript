@@ -4,7 +4,6 @@ import gdata
 import gdata.client
 import gdata.docs.client
 import gdata.spreadsheets.client
-import gspread
 import getopt
 import sys
 import os
@@ -47,9 +46,6 @@ class SpreadsheetScript():
 		self.client.email = user
 		self.client.password = pswd
 		self.client.ProgrammaticLogin()
-		
-		# create gspread client instance and login
-		self.gs_client = gspread.login(user, pswd)
 		
 		# create google docs client and login
 		self.docs_client = gdata.docs.client.DocsClient(source=src)
@@ -149,10 +145,10 @@ class SpreadsheetScript():
 				print "Worksheet not found."
 	
 	#Prints the data in the worksheet
-	def printData(self):
+	def printData(self) :
 		feed = self.client.GetListFeed(self.sheet_key, self.wksht_id)
 		# print field titles of data
-		for row in feed.entry:
+		for row in feed.entry :
 			for key in row.custom:
 				print key+'\t\t',
 			print
@@ -326,7 +322,8 @@ class SpreadsheetScript():
 			cell = cell.split(',')
 			self.client.UpdateCell(row = int(cell[0]), col = int(cell[0]), inputValue = None, key = self.sheet_key, wksht_id = self.wksht_id )
 	
-	def deleteRowValues(self, rows):
+	#on hold for now
+	'''def deleteRowValues(self, rows):
 		#Puts an empty string in the cells on the specified row
 		for row in rows:
 			row = int(row)
@@ -335,8 +332,8 @@ class SpreadsheetScript():
 			for i in range(1,len(list_of_values)):
 				self.worksheet.update_cell(row,i,"")
 				self.client.UpdateCell(row = row, col = i, inputValue = None, key = self.sheet_key, wksht_id = self.wksht_id )
-	#on hold for now
-	'''	def deleteColValues(self, docName, cols, wks = 0):
+	
+		def deleteColValues(self, docName, cols, wks = 0):
 		#Puts an empty string in the cells on the specified column
 		for col in cols:
 			col = int(col)
@@ -498,7 +495,7 @@ def main():
 	if worksheet == True:
 		client.wksht_id = client.getWorksheetIdByName(worksheetVal)
 	else:
-		selectWorksheet(client.sheet_key, worksheetVal)
+		client.wksht_id = selectWorksheet(client.sheet_key, worksheetVal)
 	
 	if nSS == True:
 		client.createSpreadsheet(newVal)
@@ -506,22 +503,38 @@ def main():
 		#client.createWorksheet()
 		pass
 	if iRowVal == True:
-		pass
+		iRowValVal = iRowValVal.split(';')
+		val = []
+		for i in range(len(iRowValVal)):
+			h = iRowValVal[i].split(',')
+			val.append(h)
+		client.updateRow(val)
+		#pass
 	if iColVal == True:
-		pass
+		iColValVal = iColValVal.split(';')
+		val = []
+		for i in range(len(iRowValVal)):
+			h = iRowValVal[i].split(',')
+			val.append(h)
+		client.updateRow(val)
+		#pass
 	if iCellVal == True:
 		inCellVal = inCellVal.split(';')
-		client.updateCell(docNameVal, inCellVal, worksheetVal)
+		client.updateCell(inCellVal)
 	if dRow == True:
 		delRowVal = delRowVal.split(';')
 		client.deleteRecord(delRowVal)
 	if dRowVal == True:
+		#dRowValVal = dRowValVal.split(';')
+		#client.deleteRowValues(dRowValVal)
 		pass
 	if dColVal == True:
+		#dColValVal = dColValVal.split(';')
+		#client.deleteColValues(dRowValVal)
 		pass
 	if dCellVal == True:
 		inCellVal == inCellVal.split(';')
-		client.deleteCellValue(docNameVal, inCellVal, worksheetVal)
+		client.deleteCellValue(inCellVal)
 	if dSS == True:
 		client.deleteSpreadsheet(rmvVal)
 	if dWS == True:

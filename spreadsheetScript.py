@@ -345,6 +345,8 @@ class SpreadsheetScript():
 					val = command[command.find('(')+1:command.find(')')].strip()
 					#val = val.split(';')
 					client.sheet_key = client.getSpreadsheetKey(val)
+				elif command[0:len('clear')+1].lower() == 'clear'.lower():
+					os.system("clear")
 				else:
 					print 'Cannot find command: '+command
 				#pass
@@ -368,6 +370,7 @@ class SpreadsheetScript():
 				elif command[0:len('help')+1].lower() == 'help'.lower():
 					self.getHelp()
 				elif command[0:len('exit')+1].lower() == 'exit'.lower():
+					client.sendMail()
 					sys.exit(2)
 				else:
 					print 'Cannot find command: '+command
@@ -378,8 +381,8 @@ class SpreadsheetScript():
 		'''for index in row_index :
 			feed = self.client.GetListFeed(self.sheet_key, self.wksht_id)
 			row = feed.entry[int(index)]
-			self.client.UpdateRow(row)'''
-			pass
+			self.client.UpdateRow(row, {'Keywords' : None})'''
+		pass
 
 	def deleteColValues(self, ) :
 		pass

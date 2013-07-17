@@ -119,7 +119,11 @@ class SpreadsheetScript():
 	def getDate(self) :
 		currentDate = datetime.now()
 		currentDate = currentDate.strftime("%m/%d/%Y")
-		return currentDate
+		if currrentDate[0]=='0':
+			return currentDate
+		else:
+			return currentDate[1:]	
+		
 
 	# create a new Google spreadsheet in Drive
 	def createSpreadsheet(self, doc):

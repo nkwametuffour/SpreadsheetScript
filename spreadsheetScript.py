@@ -7,7 +7,9 @@ import gdata.spreadsheets.client
 import getopt
 import sys
 import os
+from datetime import datetime
 import webbrowser
+from email.MIMEText import MIMEText
 import smtplib
 from Crypto.Cipher import AES
 import base64
@@ -22,8 +24,11 @@ class SpreadsheetScript():
 	USER_AGENT = 'Spreadsheet'
 	
 	def __init__(self, email, password, src='Default'):
+		f = open("editlog.txt","w")
+		f.close()
 		user = email
 		pwd = password
+		self.today = self.getDate()
 		try:
 			self.__create_clients(user, pwd, src)
 		except Exception, e:
@@ -111,6 +116,11 @@ class SpreadsheetScript():
 		f.read()
 		f.close()
 
+	def getDate(self) :
+		currentDate = datetime.now()
+		currentDate = currentDate.strftime("%m/%d/%Y")
+		return currentDate
+
 	# create a new Google spreadsheet in Drive
 	def createSpreadsheet(self, doc):
 		# create spreadsheet
@@ -140,7 +150,7 @@ class SpreadsheetScript():
 		upload_doc = self.docs_client.CreateResource(document, create_uri=create_uri, media=media)
 	
 	# add worksheet with specified size to current spreadsheet document
-	def addWorksheet(self, name, row_size, col_size):
+	def addWorksheet(self, name, row_size=20, col_size=20):
 		if name in self.getWorksheetTitles(self.sheet_key):
 			print "Please choose a unique worksheet name\n"
 		else:
@@ -225,7 +235,7 @@ class SpreadsheetScript():
 		return None	# worksheet with title, name, not found
 
 	def deleteRecord(self, rows):
-		#cnfrm = raw_input('Confim deleting record '+str(row)+' (y/n): ')
+		cnfrm = raw_input('Confim deleting record '+str(rows)+' (y/n): ')
 		if cnfrm.lower() == 'y':
 			for row in rows:
 				row = int(row)
@@ -277,19 +287,23 @@ class SpreadsheetScript():
 			
 	#Sends mail to the user
 	def sendMail(self, success = True):
+		with open("editlog.txt","rb") as text :
+			msg = MIMEText(text.read())
+			
+		msg['From'] = "rancardinterns2013@gmail.com"
+		msg['To'] = self.client.email
+		msg['Subject'] = "Update on SpreadSheet "
+		msg.preamble = "Edit Log"	
 		server = smtplib.SMTP()
 		server.connect('smtp.gmail.com', 587)
 		server.ehlo()
 		server.starttls()
 		server.ehlo()
 		server.login("rancardinterns2013@gmail.com","nopintern2013")
-		if success:
-			message ="SpreadsheetScript has been successful"
-		else:
-			message = "SpreadsheetScript was NOT successful"
-			
+		message = msg.as_string()
 		server.sendmail('rancardinterns2013@gmail.com', self.client.email, message)
-		
+		os.remove("editlog.txt")
+				
 	#Takes in the document name, checks if it exists and asks the user for the worksheet to work with.
 	def flow(self):
 #		doc = docmnt
@@ -300,28 +314,66 @@ class SpreadsheetScript():
 				if command[1:len('CellVal')+1].lower() == 'CellVal'.lower():
 					val = command[command.find('(')+1:command.find(')')]
 					val = val.split(';')
-					self.updateCell(val)
+					try:
+						self.updateCell(val)
+					except :	
+						with open("editlog.txt","a") as log :
+							log.write("\nInserting of Values into cell was Unsuccessful")
+					else :
+						with open("editlog.txt","a") as log :
+							log.write("\nInserting of Values into cell was Successful")
+					
 				elif command[1:len('RowVal')+1].lower() == 'RowVal'.lower():
 					val = command[command.find('(')+1:command.find(')')]
 					val = val.split(';')
-					self.updateRow(val)
+					
+					try:
+						self.updateRow(val)
+					except :	
+						with open("editlog.txt","a") as log :
+							log.write("\nInserting of Values into rows was Unsuccessful")
+					else :
+						with open("editlog.txt","a") as log :
+							log.write("\nInserting of Values into rows was Successful")
 				elif command[1:len('ColVal')+1].lower() == 'ColVal'.lower():
 					val = command[command.find('(')+1:command.find(')')]
 					val = val.split(';')
-					self.updateCol(val)
+					
+					try:
+						self.updateCol(val)
+					except :	
+						with open("editlog.txt","a") as log :
+							log.write("\nInserting of Values into columns was Unsuccessful")
+					else :
+						with open("editlog.txt","a") as log :
+							log.write("\nInserting of Values into columns was Successful")
 				else:
 					print 'Cannot find command: '+command
-				#pass
 			elif command[0] == 'd':
 				if command[1:len('CellVal')+1].lower() == 'CellVal'.lower():
 					val = command[command.find('(')+1:command.find(')')]
 					val = val.split(';')
-					self.deleteCellValue(val)
+					
+					try:
+						self.deleteCellValue(val)
+					except :	
+						with open("editlog.txt","a") as log :
+							log.write("\nDeleting of Values in Cells was Unsuccessful")
+					else :
+						with open("editlog.txt","a") as log :
+							log.write("\nDeleting of Values in Cells was Successful")
 				elif command[1:len('RowVal')+1].lower() == 'RowVal'.lower():
-					#val = command[command.find('(')+1:command.find(')')]
-					#val = val.split(';')
-					#self.deleteRowValues(docmnt, val)
-					pass
+					val = command[command.find('(')+1:command.find(')')]
+					val = val.split(';')
+										
+					try:
+						self.deleteRowValues(val)
+					except :	
+						with open("editlog.txt","a") as log :
+							log.write("\nDeleting of Values in Rows was Unsuccessful")
+					else :
+						with open("editlog.txt","a") as log :
+							log.write("\nDeleting of Values in Rows was Successful")
 				elif command[1:len('ColVal')+1].lower() == 'ColVal'.lower():
 					#val = command[command.find('(')+1:command.find(')')]
 					#val = val.split(';')
@@ -330,18 +382,42 @@ class SpreadsheetScript():
 				elif command[1:len('Row')+1].lower() == 'Row'.lower():
 					val = command[command.find('(')+1:command.find(')')]
 					val = val.split(';')
-					self.deleteRecord(val)
+					
+					try:
+						self.deleteRecord(val)
+					except :	
+						with open("editlog.txt","a") as log :
+							log.write("\nDeleting of Record was Unsuccessful")
+					else :
+						with open("editlog.txt","a") as log :
+							log.write("\nDeleting of Record was Successful")
+
 				elif command[1:len('WS')+1].lower() == 'WS'.lower():
 					val = command[command.find('(')+1:command.find(')')]
 					val = val.split(';')
-					#self.deleteWorsheet(val)
+					
+					try:
+						self.deleteWorksheet(val)
+					except :	
+						with open("editlog.txt","a") as log :
+							log.write("\nDeleting of Worksheet was Unsuccessful")
+					else :
+						with open("editlog.txt","a") as log :
+							log.write("\nDeleting of Worksheet was Successful")
 				elif command[1:len('SS')+1].lower() == 'SS'.lower():
 					val = command[command.find('(')+1:command.find(')')]
 					val = val.split(';')
-					self.deleteSpreadsheet(val)
+					
+					try:
+						self.deleteSpreadsheet(val)
+					except :	
+						with open("editlog.txt","a") as log :
+							log.write("\nDeleting of Spreadsheet was Unsuccessful")
+					else :
+						with open("editlog.txt","a") as log :
+							log.write("\nDeleting of Spreadsheet was Successful")
 				else:
 					print 'Cannot find command: '+command
-				#pass
 			elif command[0] == 'c':
 				if command[1:len('WS')+1].lower() == 'WS'.lower():
 					val = command[command.find('(')+1:command.find(')')].strip()
@@ -351,34 +427,46 @@ class SpreadsheetScript():
 					val = command[command.find('(')+1:command.find(')')].strip()
 					#val = val.split(';')
 					client.sheet_key = client.getSpreadsheetKey(val)
+				elif command[0:len('clear')+1].lower() == 'clear'.lower():
+					os.system("clear")
 				else:
 					print 'Cannot find command: '+command
-				#pass
 			elif command[0] =='n':
 				if command[1:len('WS')+1].lower() == 'WS'.lower():
 					val = command[command.find('(')+1:command.find(')')].strip()
-					#val = val.split(';')
-					w_args = val.split(',')
-					self.addWorksheet(w_args[0], w_args[1], w_args[2])
+					val = val.split(',')
+					if len(val) == 3:
+						self.addWorksheet(val[0], val[1], val[2])
+					else:
+						self.addWorksheet(val[0])
 					pass
 				elif command[1:len('SS')+1].lower() == 'SS'.lower():
 					val = command[command.find('(')+1:command.find(')')].strip()
-					#val = val.split(';')
 					self.createSpreadsheet(val)
 				else:
 					print 'Cannot find command: '+command
-				#pass
 			else:
 				if command[0:len('print')+1].lower() == 'print'.lower():
 					self.printData()
 				elif command[0:len('help')+1].lower() == 'help'.lower():
 					self.getHelp()
 				elif command[0:len('exit')+1].lower() == 'exit'.lower():
+					self.sendMail()
 					sys.exit(2)
 				else:
 					print 'Cannot find command: '+command
-				#pass
-			
+
+	def deleteRowValues(self, row_index) :
+		#Puts an empty string in the specified cell
+		'''for index in row_index :
+			feed = self.client.GetListFeed(self.sheet_key, self.wksht_id)
+			row = feed.entry[int(index)]
+			self.client.UpdateRow(row, {'Keywords' : None})'''
+		pass
+
+	def deleteColValues(self, col_index):
+		pass
+					
 		
 	def updateCell(self, cellAndVal):
 		#Overwrites the value in the cell specified with new_value
@@ -389,22 +477,22 @@ class SpreadsheetScript():
 	def updateRow(self, rowAndVal):
 		#Overwrites the values in the row with the given values
 		for i in range(len(rowAndVal)):
-			row = int(rowAndVal[i[0]])
+			row = int(rowAndVal[i][0])
 			for h in range(1, len(rowAndVal[i])):
-				self.client.UpdateCell(row = row, col = i, inputValue = rowAndVal[i[h]], key = self.sheet_key, wksht_id = self.wksht_id )
+				self.client.UpdateCell(row = row, col = i, inputValue = rowAndVal[i][h], key = self.sheet_key, wksht_id = self.wksht_id )
 
 	def updateCol(self, colAndVal):
 		#Overwrites the values in the column with the given values
 		for i in range(len(colAndVal)):
-			col = int(colAndVal[i[0]])
+			col = int(colAndVal[i][0])
 			for h in range(1, len(colAndVal[i])):
-				self.client.UpdateCell(row = i+1, col = col, inputValue = colAndVal[i[h]], key = self.sheet_key, wksht_id = self.wksht_id )
+				self.client.UpdateCell(row = i+1, col = col, inputValue = colAndVal[i][h], key = self.sheet_key, wksht_id = self.wksht_id )
 	
 	def deleteCellValue(self, cells):
 		#Puts an empty string in the specified cell
 		for cell in cells:
 			cell = cell.split(',')
-			self.client.UpdateCell(row = int(cell[0]), col = int(cell[0]), inputValue = None, key = self.sheet_key, wksht_id = self.wksht_id )
+			self.client.UpdateCell(row = int(cell[0]), col = int(cell[1]), inputValue = None, key = self.sheet_key, wksht_id = self.wksht_id )
 	
 	#on hold for now
 	'''def deleteRowValues(self, rows):
@@ -526,10 +614,10 @@ def main():
 		elif opt == "--exit":
 			ext = True
 		elif opt == "--nWS":
-			new = True
+			nWS = True
 			nWSVal = val
 		elif opt == "--nSS":
-			new = True
+			nSS = True
 			nSSVal = val
 		elif opt == "--iRowVal":
 			iRowVal = True
@@ -573,7 +661,7 @@ def main():
 	else:
 		if user == False or pwd == False:
 			print "python spreadsheetScript.py --user email --pwd password"
-			SpreadsheetScript.getHelp()
+			print "python spreadsheetScript.py --help"
 			sys.exit(0)
 		if docName == False and nSS == False:
 			print "You have to specify a document or create a new Spreadsheet to work with"
@@ -587,18 +675,26 @@ def main():
 			
 	
 	
+	
 	client = SpreadsheetScript(userVal, pwdVal, srcVal)
+	
+	if nSS == True:
+		client.createSpreadsheet(nSSVal)
 	client.sheet_key = client.getSpreadsheetKey(docNameVal)
-	if worksheet == True:
+	if nWS == True:
+		nWSVal = nWSVal.split(',')
+		if len(nWSVal) == 3:
+			client.addWorksheet(nWSVal[0], nWSVal[1], nWSVal[2])
+		else:
+			client.addWorksheet(nWSVal[0])
+	
+	if worksheet == True :
 		client.wksht_id = client.getWorksheetIdByName(worksheetVal)
+	elif nWS == True:
+		client.wksht_id = client.getWorksheetIdByName(nWSVal)
 	else:
 		client.wksht_id = client.selectWorksheet(client.sheet_key, worksheetVal)
 	
-	if nSS == True:
-		client.createSpreadsheet(newVal)
-	if nWS == True:
-		#client.createWorksheet()
-		pass
 	if iRowVal == True:
 		iRowValVal = iRowValVal.split(';')
 		val = []
@@ -606,15 +702,13 @@ def main():
 			h = iRowValVal[i].split(',')
 			val.append(h)
 		client.updateRow(val)
-		#pass
 	if iColVal == True:
 		iColValVal = iColValVal.split(';')
 		val = []
-		for i in range(len(iRowValVal)):
-			h = iRowValVal[i].split(',')
+		for i in range(len(iColValVal)):
+			h = iColValVal[i].split(',')
 			val.append(h)
 		client.updateRow(val)
-		#pass
 	if iCellVal == True:
 		iCellValVal = iCellValVal.split(';')
 		client.updateCell(iCellValVal)
@@ -630,10 +724,10 @@ def main():
 		#client.deleteColValues(dRowValVal)
 		pass
 	if dCellVal == True:
-		inCellVal == inCellVal.split(';')
-		client.deleteCellValue(inCellVal)
+		dCellValVal = dCellValVal.split(';')
+		client.deleteCellValue(dCellValVal)
 	if dSS == True:
-		client.deleteSpreadsheet(rmvVal)
+		client.deleteSpreadsheet(dSSVal)
 	if dWS == True:
 		val = []
 		val.append(dWSVal)
@@ -641,7 +735,7 @@ def main():
 	if prnt == True:
 		client.printData()
 	if ext == True:
-		sys.exit(2)
+		sys.exit(0)
 	
 	"""	position = (str(client.getRowNumber('1/3/2013'))+','+str(client.getOperationColumnNumber('subscription growth','80102'))+','+'67785').split()
 	print position

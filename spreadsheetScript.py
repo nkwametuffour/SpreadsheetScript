@@ -21,19 +21,27 @@ class SpreadsheetScript():
 	SCOPE = 'https://spreadsheets.google.com/feeds/'
 	USER_AGENT = 'Spreadsheet'
 	
-	def __init__(self, src='Default'):
+	def __init__(self, email, password, src='Default'):
+		user = email
+		pwd = password
 		try:
-			user = raw_input('Enter username: ').strip()
-			pwd = raw_input('Enter password: ').strip()
-			# validate user and password
-			try:
-				self.__create_clients(user, pwd, src)
-			except Exception, e:
-				print 'Login failed.',e
+			self.__create_clients(user, pwd, src)
+		except Exception, e:
+			print 'Login failed.',e
+		
+		#try:
+		#	user = raw_input('Enter username: ').strip()
+		#	pwd = raw_input('Enter password: ').strip()
+		#	# validate user and password
+		#	try:
+		#		self.__create_clients(user, pwd, src)
+		#	except Exception, e:
+		#		print 'Login failed.',e
 				
 			#self.__store_cred([user, pwd])
-		except Exception, e:
-			print 'Program execution failed:',e
+		#except Exception, e:
+		#	print 'Program execution failed:',e
+		
 		#token = gdata.gauth.OAuth2Token(client_id=self.CLIENT_ID, client_secret=self.CLIENT_SECRET, scope=self.SCOPE, user_agent=self.USER_AGENT, access_token=tkn[1], refresh_token=tkn[0])
 		# create gdata spreadsheet client instance and login with email and password
 		#self.client = gdata.spreadsheets.client.SpreadsheetsClient()
@@ -281,7 +289,7 @@ class SpreadsheetScript():
 #		doc = docmnt
 		con = True
 		while con == True:
-			command = raw_input('>>>')
+			command = raw_input('>>> ')
 			if command[0] == 'i':
 				if command[1:len('CellVal')+1].lower() == 'CellVal'.lower():
 					val = command[command.find('(')+1:command.find(')')]
@@ -360,11 +368,7 @@ class SpreadsheetScript():
 				elif command[0:len('help')+1].lower() == 'help'.lower():
 					self.getHelp()
 				elif command[0:len('exit')+1].lower() == 'exit'.lower():
-<<<<<<< HEAD
-					sys.exit()
-=======
 					sys.exit(2)
->>>>>>> upstream/master
 				else:
 					print 'Cannot find command: '+command
 				#pass
@@ -458,6 +462,8 @@ Main Options
 	"""
 	
 def main():
+	user = False
+	pwd = False
 	src = False
 	docName = False
 	worksheet = False
@@ -481,7 +487,7 @@ def main():
 	
 	# check if user has entered the correct options
 	try:
-		opts, args = getopt.getopt(sys.argv[1:], "", ["src=", "docName=", "worksheet=", "pirnt", "help", "iRowVal=", "iColVal=", 
+		opts, args = getopt.getopt(sys.argv[1:], "", ["user=", "pwd=", "src=", "docName=", "worksheet=", "pirnt", "help", "iRowVal=", "iColVal=", 
 	"iCellVal=", "dRowVal=", "dColVal=", "dCellVal=", "dRow=", "dWS=", "dSS=", "nSS=", "nWS=", "exit"])
 	except getopt.GetoptError, e:
 		print "python spreadsheetScript.py --help. For help:", e, "\n"
@@ -492,6 +498,12 @@ def main():
 	worksheetVal = 0
 	srcVal = "Default"
 	for opt, val in opts:
+		if opt == "--user":
+			user = True
+			userVal = val
+		elif opt == "--pwd":
+			pwd = True
+			pwdVal = val
 		if opt == "--src":
 			src = True
 			srcVal = val
@@ -505,6 +517,8 @@ def main():
 			prnt = True
 		elif opt == "--help":
 			hlp = True
+		elif opt == "--exit":
+			ext = True
 		elif opt == "--nWS":
 			new = True
 			nWSVal = val
@@ -551,6 +565,10 @@ def main():
 		SpreadsheetScript.getHelp()
 		sys.exit(0)
 	else:
+		if user == False or pwd == False:
+			print "python spreadsheetScript.py --user email --pwd password"
+			SpreadsheetScript.getHelp()
+			sys.exit(0)
 		if docName == False and nSS == False:
 			print "You have to specify a document or create a new Spreadsheet to work with"
 		if nSS == True and docName == False:
@@ -563,7 +581,7 @@ def main():
 			
 	
 	
-	client = SpreadsheetScript(srcVal)
+	client = SpreadsheetScript(userVal, pwdVal, srcVal)
 	client.sheet_key = client.getSpreadsheetKey(docNameVal)
 	if worksheet == True:
 		client.wksht_id = client.getWorksheetIdByName(worksheetVal)

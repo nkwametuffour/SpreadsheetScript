@@ -8,6 +8,7 @@ import getopt
 import sys
 import os
 import webbrowser
+from email.MIMEText import MIMEText
 import smtplib
 from Crypto.Cipher import AES
 import base64
@@ -271,19 +272,23 @@ class SpreadsheetScript():
 			
 	#Sends mail to the user
 	def sendMail(self, success = True):
+		with open("editlog.txt","rb") as text :
+			msg = MIMEText(text.read())
+			
+		msg['From'] = "rancardinterns2013@gmail.com"
+		msg['To'] = self.client.email
+		msg['Subject'] = "Update on SpreadSheet "
+		msg.preamble = "Edit Log"	
 		server = smtplib.SMTP()
 		server.connect('smtp.gmail.com', 587)
 		server.ehlo()
 		server.starttls()
 		server.ehlo()
 		server.login("rancardinterns2013@gmail.com","nopintern2013")
-		if success:
-			message ="SpreadsheetScript has been successful"
-		else:
-			message = "SpreadsheetScript was NOT successful"
-			
+		message = msg.as_string()
 		server.sendmail('rancardinterns2013@gmail.com', self.client.email, message)
-		
+		os.remove("editlog.txt")
+				
 	#Takes in the document name, checks if it exists and asks the user for the worksheet to work with.
 	def flow(self):
 #		doc = docmnt
@@ -294,15 +299,39 @@ class SpreadsheetScript():
 				if command[1:len('CellVal')+1].lower() == 'CellVal'.lower():
 					val = command[command.find('(')+1:command.find(')')]
 					val = val.split(';')
-					self.updateCell(val)
+					try:
+						self.updateCell(val)
+					except :	
+						with open("editlog.txt","a") as log :
+							log.write("\nInserting of Values into cell was Unsuccessful")
+					else :
+						with open("editlog.txt","a") as log :
+							log.write("\nInserting of Values into cell was Successful")
+					
 				elif command[1:len('RowVal')+1].lower() == 'RowVal'.lower():
 					val = command[command.find('(')+1:command.find(')')]
 					val = val.split(';')
-					self.updateRow(val)
+					
+					try:
+						self.updateRow(val)
+					except :	
+						with open("editlog.txt","a") as log :
+							log.write("\nInserting of Values into rows was Unsuccessful")
+					else :
+						with open("editlog.txt","a") as log :
+							log.write("\nInserting of Values into rows was Successful")
 				elif command[1:len('ColVal')+1].lower() == 'ColVal'.lower():
 					val = command[command.find('(')+1:command.find(')')]
 					val = val.split(';')
-					self.updateCol(val)
+					
+					try:
+						self.updateCol(val)
+					except :	
+						with open("editlog.txt","a") as log :
+							log.write("\nInserting of Values into columns was Unsuccessful")
+					else :
+						with open("editlog.txt","a") as log :
+							log.write("\nInserting of Values into columns was Successful")
 				else:
 					print 'Cannot find command: '+command
 				#pass
@@ -310,12 +339,27 @@ class SpreadsheetScript():
 				if command[1:len('CellVal')+1].lower() == 'CellVal'.lower():
 					val = command[command.find('(')+1:command.find(')')]
 					val = val.split(';')
-					self.deleteCellValue(val)
+					
+					try:
+						self.deleteCellValue(val)
+					except :	
+						with open("editlog.txt","a") as log :
+							log.write("\nDeleting of Values in Cells was Unsuccessful")
+					else :
+						with open("editlog.txt","a") as log :
+							log.write("\nDeleting of Values in Cells was Successful")
 				elif command[1:len('RowVal')+1].lower() == 'RowVal'.lower():
 					val = command[command.find('(')+1:command.find(')')]
 					val = val.split(';')
-					self.deleteRowValues(val)
-					pass
+										
+					try:
+						self.deleteRowValues(val)
+					except :	
+						with open("editlog.txt","a") as log :
+							log.write("\nDeleting of Values in Rows was Unsuccessful")
+					else :
+						with open("editlog.txt","a") as log :
+							log.write("\nDeleting of Values in Rows was Successful")
 				elif command[1:len('ColVal')+1].lower() == 'ColVal'.lower():
 					#val = command[command.find('(')+1:command.find(')')]
 					#val = val.split(';')
@@ -324,15 +368,40 @@ class SpreadsheetScript():
 				elif command[1:len('Row')+1].lower() == 'Row'.lower():
 					val = command[command.find('(')+1:command.find(')')]
 					val = val.split(';')
-					self.deleteRecord(val)
+					
+					try:
+						self.deleteRecord(val)
+					except :	
+						with open("editlog.txt","a") as log :
+							log.write("\nDeleting of Record was Unsuccessful")
+					else :
+						with open("editlog.txt","a") as log :
+							log.write("\nDeleting of Record was Successful")
+
 				elif command[1:len('WS')+1].lower() == 'WS'.lower():
 					val = command[command.find('(')+1:command.find(')')]
 					val = val.split(';')
-					self.deleteWorksheet(val)
+					
+					try:
+						self.deleteWorksheet(val)
+					except :	
+						with open("editlog.txt","a") as log :
+							log.write("\nDeleting of Worksheet was Unsuccessful")
+					else :
+						with open("editlog.txt","a") as log :
+							log.write("\nDeleting of Worksheet was Successful")
 				elif command[1:len('SS')+1].lower() == 'SS'.lower():
 					val = command[command.find('(')+1:command.find(')')]
 					val = val.split(';')
-					self.deleteSpreadsheet(val)
+					
+					try:
+						self.deleteSpreadsheet(val)
+					except :	
+						with open("editlog.txt","a") as log :
+							log.write("\nDeleting of Spreadsheet was Unsuccessful")
+					else :
+						with open("editlog.txt","a") as log :
+							log.write("\nDeleting of Spreadsheet was Successful")
 				else:
 					print 'Cannot find command: '+command
 				#pass
@@ -370,7 +439,7 @@ class SpreadsheetScript():
 				elif command[0:len('help')+1].lower() == 'help'.lower():
 					self.getHelp()
 				elif command[0:len('exit')+1].lower() == 'exit'.lower():
-					client.sendMail()
+					self.sendMail()
 					sys.exit(2)
 				else:
 					print 'Cannot find command: '+command

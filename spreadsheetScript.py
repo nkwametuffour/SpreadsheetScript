@@ -23,6 +23,8 @@ class SpreadsheetScript():
 	USER_AGENT = 'Spreadsheet'
 	
 	def __init__(self, email, password, src='Default'):
+		f = open("editlog.txt","w")
+		f.close()
 		user = email
 		pwd = password
 		try:
@@ -334,7 +336,6 @@ class SpreadsheetScript():
 							log.write("\nInserting of Values into columns was Successful")
 				else:
 					print 'Cannot find command: '+command
-				#pass
 			elif command[0] == 'd':
 				if command[1:len('CellVal')+1].lower() == 'CellVal'.lower():
 					val = command[command.find('(')+1:command.find(')')]
@@ -404,7 +405,6 @@ class SpreadsheetScript():
 							log.write("\nDeleting of Spreadsheet was Successful")
 				else:
 					print 'Cannot find command: '+command
-				#pass
 			elif command[0] == 'c':
 				if command[1:len('WS')+1].lower() == 'WS'.lower():
 					val = command[command.find('(')+1:command.find(')')].strip()
@@ -418,21 +418,20 @@ class SpreadsheetScript():
 					os.system("clear")
 				else:
 					print 'Cannot find command: '+command
-				#pass
 			elif command[0] =='n':
 				if command[1:len('WS')+1].lower() == 'WS'.lower():
 					val = command[command.find('(')+1:command.find(')')].strip()
-					#val = val.split(';')
-					w_args = val.split(',')
-					self.addWorksheet(w_args[0], w_args[1], w_args[2])
+					val = val.split(',')
+					if len(val) == 3:
+						self.addWorksheet(val[0], val[1], val[2])
+					else:
+						self.addWorksheet(val[0])
 					pass
 				elif command[1:len('SS')+1].lower() == 'SS'.lower():
 					val = command[command.find('(')+1:command.find(')')].strip()
-					#val = val.split(';')
 					self.createSpreadsheet(val)
 				else:
 					print 'Cannot find command: '+command
-				#pass
 			else:
 				if command[0:len('print')+1].lower() == 'print'.lower():
 					self.printData()
@@ -443,7 +442,6 @@ class SpreadsheetScript():
 					sys.exit(2)
 				else:
 					print 'Cannot find command: '+command
-				#pass
 
 	def deleteRowValues(self, row_index) :
 		#Puts an empty string in the specified cell
@@ -453,7 +451,7 @@ class SpreadsheetScript():
 			self.client.UpdateRow(row, {'Keywords' : None})'''
 		pass
 
-	def deleteColValues(self, ) :
+	def deleteColValues(self, col_index):
 		pass
 					
 		
@@ -481,7 +479,7 @@ class SpreadsheetScript():
 		#Puts an empty string in the specified cell
 		for cell in cells:
 			cell = cell.split(',')
-			self.client.UpdateCell(row = int(cell[0]), col = int(cell[0]), inputValue = None, key = self.sheet_key, wksht_id = self.wksht_id )
+			self.client.UpdateCell(row = int(cell[0]), col = int(cell[1]), inputValue = None, key = self.sheet_key, wksht_id = self.wksht_id )
 	
 	#on hold for now
 	'''def deleteRowValues(self, rows):
@@ -694,8 +692,8 @@ def main():
 	if iColVal == True:
 		iColValVal = iColValVal.split(';')
 		val = []
-		for i in range(len(iRowValVal)):
-			h = iRowValVal[i].split(',')
+		for i in range(len(iColValVal)):
+			h = iColValVal[i].split(',')
 			val.append(h)
 		client.updateRow(val)
 	if iCellVal == True:
@@ -713,10 +711,10 @@ def main():
 		#client.deleteColValues(dRowValVal)
 		pass
 	if dCellVal == True:
-		inCellVal == inCellVal.split(';')
-		client.deleteCellValue(inCellVal)
+		dCellValVal = dCellValVal.split(';')
+		client.deleteCellValue(dCellValVal)
 	if dSS == True:
-		client.deleteSpreadsheet(rmvVal)
+		client.deleteSpreadsheet(dSSVal)
 	if dWS == True:
 		val = []
 		val.append(dWSVal)
@@ -724,7 +722,7 @@ def main():
 	if prnt == True:
 		client.printData()
 	if ext == True:
-		sys.exit(2)
+		sys.exit(0)
 	
 	"""	position = [str(client.getRowNumber('1/3/2013'))+','+str(client.getOperationColumnNumber('subscription growth','80102'))+','+'67785']
 	print position

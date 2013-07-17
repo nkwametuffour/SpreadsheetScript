@@ -276,19 +276,11 @@ class SpreadsheetScript():
 				return success_rate[code]
 			except KeyError, e:
 				print e
-<<<<<<< HEAD
-	#took out the string variable that was below
-	#its replaced by self.today			
-=======
-<<<<<<< HEAD
-				
-=======
 
 	#took out the string variable that was below
 	#its replaced by self.today			
 	
->>>>>>> 0335d32d220e3fa5d9b2299f41513cb7f1fcf2af
->>>>>>> 2e998968e9ab0789ab409252a2e68516d2811bcb
+
 	def getRowNumber(self):
 		row_entry = self.client.GetListFeed(self.sheet_key, self.wksht_id)
 		row_ct = 2
@@ -466,10 +458,10 @@ class SpreadsheetScript():
 						self.createSpreadsheet(val)
 					except :	
 						with open("editlog.txt","a") as log :
-							log.write("\nCreation of new worksheet was Unsuccessful")
+							log.write("\nCreation of new Spreadsheet was Unsuccessful")
 					else :
 						with open("editlog.txt","a") as log :
-							log.write("\Creation of new worksheet was Successful")
+							log.write("\nCreation of new Spreadsheet was Successful")
 				else:
 					print 'Cannot find command: '+command
 			else:
@@ -593,25 +585,25 @@ def main():
 	worksheet = False
 	prnt = False
 	hlp = False
+	#iRow = False
 	iRowVal = False
 	iColVal = False
 	iCellVal = False
+	dRowVal = False
+	dColVal = False
 	dCellVal= False
 	dRow = False
 	dWS = False
 	dSS = False
+	#cWS = False
+	#cSS = False
 	nSS = False
 	nWS = False
 	ext = False
 	
 	# check if user has entered the correct options
 	try:
-<<<<<<< HEAD
-		opts, args = getopt.getopt(sys.argv[1:], "", ["user=", "pwd=", "operation=", "shortcode=","insert=" "src=", "docName=",
-		"worksheet=", "print", "help", "iRowVal=", "iColVal=",
-=======
 		opts, args = getopt.getopt(sys.argv[1:], "", ["user=", "pwd=", "operation=", "shortcode=","insert=", "src=", "docName=", "worksheet=", "print", "help", "iRowVal=", "iColVal=", \
->>>>>>> 2e998968e9ab0789ab409252a2e68516d2811bcb
 		"iCellVal=", "dCellVal=", "dRow=", "dWS=", "dSS=", "nSS=", "nWS=", "exit"])
 	except getopt.GetoptError, e:
 		print "python spreadsheetScript.py --help. For help:", e, "\n"
@@ -667,6 +659,12 @@ def main():
 		elif opt == "--iCellVal":
 			iCellVal = True
 			iCellValVal = val
+		elif opt == "--dRowVal":
+			dRowVal = True
+			dRowValVal = val
+		elif opt == "--dColVal":
+			dColVal = True
+			dColValVal = val
 		elif opt == "--dCellVal":
 			dCellVal = True
 			dCellValVal = val
@@ -679,7 +677,14 @@ def main():
 		elif opt == "--dSS":
 			dSS = True	
 			dSSVal = val
+		'''elif opt == "--cWS":
+			cWS = True	
+			cWSVal = val
+		elif opt == "--cSS":
+			cSS = True	
+			cSSVal = val'''
 	
+	#worksheet = True
 	
 	if hlp == True:
 		SpreadsheetScript.getHelp()
@@ -702,31 +707,18 @@ def main():
 				print "You have to specify a new document"
 				SpreadsheetScript.getHelp()
 				sys.exit()
-<<<<<<< HEAD
-				
-=======
 	
->>>>>>> 2e998968e9ab0789ab409252a2e68516d2811bcb
 	client = SpreadsheetScript(userVal, pwdVal, srcVal)
-	log = open("editlog.txt","a")
 
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
+	log = open("editlog.txt","a+")
+
 	
 	
->>>>>>> 2e998968e9ab0789ab409252a2e68516d2811bcb
 	if operation == True and shortcode == True and insert == True and docName == True:
 		row = str(client.getRowNumber())
 		col = str(client.getOperationColumnNumber(operationVal, shortcodeVal))
 		client.updateCell(row+','+col+','+str(insertVal))
-<<<<<<< HEAD
-
-=======
 	
-=======
->>>>>>> 0335d32d220e3fa5d9b2299f41513cb7f1fcf2af
->>>>>>> 2e998968e9ab0789ab409252a2e68516d2811bcb
 	if nSS == True:
 		client.createSpreadsheet(nSSVal)
 	client.sheet_key = client.getSpreadsheetKey(docNameVal)
@@ -795,6 +787,14 @@ def main():
 			log.write("\nRecord DElete was Unsuccessful")
 		else :
 			log.write("\Record Delete was Successful")		
+	if dRowVal == True:
+		#dRowValVal = dRowValVal.split(';')
+		#client.deleteRowValues(dRowValVal)
+		pass
+	if dColVal == True:
+		#dColValVal = dColValVal.split(';')
+		#client.deleteColValues(dRowValVal)
+		pass
 	if dCellVal == True:
 		dCellValVal = dCellValVal.split(';')
 		try:
@@ -824,20 +824,8 @@ def main():
 	if ext == True:
 		client.sendMail()
 		sys.exit(0)
-<<<<<<< HEAD
-	
-
-
-	"""	position = (str(client.getRowNumber('1/3/2013'))+','+str(client.getOperationColumnNumber('subscription growth','80102'))+','+'67785').split()
-	print position
-	client.updateCell(position)	"""
-=======
-<<<<<<< HEAD
-=======
->>>>>>> 2e998968e9ab0789ab409252a2e68516d2811bcb
 
 	client.flow()
->>>>>>> 0335d32d220e3fa5d9b2299f41513cb7f1fcf2af
 		
 # if script is being run as a standalone application, its name attribute is __main__
 if __name__ == '__main__':

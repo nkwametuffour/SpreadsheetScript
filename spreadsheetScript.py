@@ -108,7 +108,7 @@ class SpreadsheetScript():
 		f.read()
 		f.close()
 
-	def getDate() :
+	def getDate(self) :
 		currentDate = datetime.now()
 		currentDate = currentDate.strftime("%m/%d/%Y")
 		return currentDate

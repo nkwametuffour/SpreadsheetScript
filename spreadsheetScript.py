@@ -134,7 +134,7 @@ class SpreadsheetScript():
 		upload_doc = self.docs_client.CreateResource(document, create_uri=create_uri, media=media)
 	
 	# add worksheet with specified size to current spreadsheet document
-	def addWorksheet(self, name, row_size, col_size):
+	def addWorksheet(self, name, row_size=20, col_size=20):
 		if name in self.getWorksheetTitles(self.sheet_key):
 			print "Please choose a unique worksheet name\n"
 		else:
@@ -370,7 +370,7 @@ class SpreadsheetScript():
 				elif command[0:len('help')+1].lower() == 'help'.lower():
 					self.getHelp()
 				elif command[0:len('exit')+1].lower() == 'exit'.lower():
-					client.sendMail()
+					self.sendMail()
 					sys.exit(2)
 				else:
 					print 'Cannot find command: '+command
@@ -534,10 +534,10 @@ def main():
 		elif opt == "--exit":
 			ext = True
 		elif opt == "--nWS":
-			new = True
+			nWS = True
 			nWSVal = val
 		elif opt == "--nSS":
-			new = True
+			nSS = True
 			nSSVal = val
 		elif opt == "--iRowVal":
 			iRowVal = True
@@ -595,18 +595,26 @@ def main():
 			
 	
 	
+	
 	client = SpreadsheetScript(userVal, pwdVal, srcVal)
-	client.sheet_key = client.getSpreadsheetKey(docNameVal)
-	if worksheet == True :
-		client.wksht_id = client.getWorksheetIdByName(worksheetVal)
-	else:
-		client.wksht_id = client.selectWorksheet(client.sheet_key, worksheetVal)
 	
 	if nSS == True:
 		client.createSpreadsheet(nSSVal)
+	client.sheet_key = client.getSpreadsheetKey(docNameVal)
 	if nWS == True:
-		#client.createWorksheet()
-		pass
+		nWSVal = nWSVal.split(',')
+		if len(nWSVal) == 3:
+			client.addWorksheet(nWSVal[0], nWSVal[1], nWSVal[2])
+		else:
+			client.addWorksheet(nWSVal[0])
+	
+	if worksheet == True :
+		client.wksht_id = client.getWorksheetIdByName(worksheetVal)
+	elif nWS == True:
+		client.wksht_id = client.getWorksheetIdByName(nWSVal)
+	else:
+		client.wksht_id = client.selectWorksheet(client.sheet_key, worksheetVal)
+	
 	if iRowVal == True:
 		iRowValVal = iRowValVal.split(';')
 		val = []
@@ -614,7 +622,6 @@ def main():
 			h = iRowValVal[i].split(',')
 			val.append(h)
 		client.updateRow(val)
-		#pass
 	if iColVal == True:
 		iColValVal = iColValVal.split(';')
 		val = []
@@ -622,7 +629,6 @@ def main():
 			h = iRowValVal[i].split(',')
 			val.append(h)
 		client.updateRow(val)
-		#pass
 	if iCellVal == True:
 		iCellValVal = iCellValVal.split(';')
 		client.updateCell(iCellValVal)

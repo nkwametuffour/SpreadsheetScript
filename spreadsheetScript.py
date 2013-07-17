@@ -28,7 +28,7 @@ class SpreadsheetScript():
 		f.close()
 		user = email
 		pwd = password
-		self.today = self.getDate()
+		print self.today
 		try:
 			self.__create_clients(user, pwd, src)
 		except Exception, e:
@@ -119,7 +119,7 @@ class SpreadsheetScript():
 	def getDate(self) :
 		currentDate = datetime.now()
 		currentDate = currentDate.strftime("%m/%d/%Y")
-		return currentDate
+		return str(currentDate).lstrip('0')
 
 	# create a new Google spreadsheet in Drive
 	def createSpreadsheet(self, doc):
@@ -584,7 +584,7 @@ def main():
 	
 	# check if user has entered the correct options
 	try:
-		opts, args = getopt.getopt(sys.argv[1:], "", ["user=", "pwd=", "operation=", "shortcode=","insert=" "src=", "docName=", "worksheet=", "print", "help", "iRowVal=", "iColVal=", \
+		opts, args = getopt.getopt(sys.argv[1:], "", ["user=", "pwd=", "operation=", "shortcode=","insert=", "src=", "docName=", "worksheet=", "print", "help", "iRowVal=", "iColVal=", \
 		"iCellVal=", "dCellVal=", "dRow=", "dWS=", "dSS=", "nSS=", "nWS=", "exit"])
 	except getopt.GetoptError, e:
 		print "python spreadsheetScript.py --help. For help:", e, "\n"
@@ -606,7 +606,7 @@ def main():
 			operationVal = val
 		elif opt == "--shortcode":
 			shortcode = True
-			shortcodeCal = val
+			shortcodeVal = val
 		elif opt == "--insert":
 			insert = True
 			insertVal = val
@@ -692,14 +692,7 @@ def main():
 	
 	
 	
-	client = SpreadsheetScript(userVal, pwdVal, srcVal)
-	
-	
-	if operation == True and shortcode == True and insert == True and docName == True:
-		row = str(client.getRowNumber())
-		col = str(client.getOperationColumnNumber(operationVal, shortcodeVal))
-		client.updateCell(row+','+col+','+str(insertVal))
-	
+	client = SpreadsheetScript(userVal, pwdVal, srcVal)	
 	
 	if nSS == True:
 		client.createSpreadsheet(nSSVal)
@@ -717,6 +710,11 @@ def main():
 		client.wksht_id = client.getWorksheetIdByName(nWSVal)
 	else:
 		client.wksht_id = client.selectWorksheet(client.sheet_key, worksheetVal)
+		
+	if operation == True and shortcode == True and insert == True and docName == True:
+		row = str(client.getRowNumber())
+		col = str(client.getOperationColumnNumber(operationVal, shortcodeVal))
+		client.updateCell((row+','+col+','+str(insertVal)).split(';'))
 	
 	if iRowVal == True:
 		iRowValVal = iRowValVal.split(';')

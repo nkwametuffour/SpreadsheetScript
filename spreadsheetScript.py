@@ -211,7 +211,7 @@ class SpreadsheetScript():
 		return None	# worksheet with title, name, not found
 
 	def deleteRecord(self, rows):
-		#cnfrm = raw_input('Confim deleting record '+str(row)+' (y/n): ')
+		cnfrm = raw_input('Confim deleting record '+str(rows)+' (y/n): ')
 		if cnfrm.lower() == 'y':
 			for row in rows:
 				row = int(row)
@@ -281,7 +281,7 @@ class SpreadsheetScript():
 #		doc = docmnt
 		con = True
 		while con == True:
-			command = raw_input('>>>')
+			command = raw_input('>>> ')
 			if command[0] == 'i':
 				if command[1:len('CellVal')+1].lower() == 'CellVal'.lower():
 					val = command[command.find('(')+1:command.find(')')]
@@ -320,7 +320,7 @@ class SpreadsheetScript():
 				elif command[1:len('WS')+1].lower() == 'WS'.lower():
 					val = command[command.find('(')+1:command.find(')')]
 					val = val.split(';')
-					#self.deleteWorsheet(val)
+					self.deleteWorksheet(val)
 				elif command[1:len('SS')+1].lower() == 'SS'.lower():
 					val = command[command.find('(')+1:command.find(')')]
 					val = val.split(';')
@@ -360,11 +360,7 @@ class SpreadsheetScript():
 				elif command[0:len('help')+1].lower() == 'help'.lower():
 					self.getHelp()
 				elif command[0:len('exit')+1].lower() == 'exit'.lower():
-<<<<<<< HEAD
-					sys.exit()
-=======
 					sys.exit(2)
->>>>>>> upstream/master
 				else:
 					print 'Cannot find command: '+command
 				#pass
@@ -379,16 +375,16 @@ class SpreadsheetScript():
 	def updateRow(self, rowAndVal):
 		#Overwrites the values in the row with the given values
 		for i in range(len(rowAndVal)):
-			row = int(rowAndVal[i[0]])
+			row = int(rowAndVal[i][0])
 			for h in range(1, len(rowAndVal[i])):
-				self.client.UpdateCell(row = row, col = i, inputValue = rowAndVal[i[h]], key = self.sheet_key, wksht_id = self.wksht_id )
+				self.client.UpdateCell(row = row, col = i, inputValue = rowAndVal[i][h], key = self.sheet_key, wksht_id = self.wksht_id )
 
 	def updateCol(self, colAndVal):
 		#Overwrites the values in the column with the given values
 		for i in range(len(colAndVal)):
-			col = int(colAndVal[i[0]])
+			col = int(colAndVal[i][0])
 			for h in range(1, len(colAndVal[i])):
-				self.client.UpdateCell(row = i+1, col = col, inputValue = colAndVal[i[h]], key = self.sheet_key, wksht_id = self.wksht_id )
+				self.client.UpdateCell(row = i+1, col = col, inputValue = colAndVal[i][h], key = self.sheet_key, wksht_id = self.wksht_id )
 	
 	def deleteCellValue(self, cells):
 		#Puts an empty string in the specified cell
@@ -565,13 +561,13 @@ def main():
 	
 	client = SpreadsheetScript(srcVal)
 	client.sheet_key = client.getSpreadsheetKey(docNameVal)
-	if worksheet == True:
+	if worksheet == True :
 		client.wksht_id = client.getWorksheetIdByName(worksheetVal)
 	else:
 		client.wksht_id = client.selectWorksheet(client.sheet_key, worksheetVal)
 	
 	if nSS == True:
-		client.createSpreadsheet(newVal)
+		client.createSpreadsheet(nSSVal)
 	if nWS == True:
 		#client.createWorksheet()
 		pass

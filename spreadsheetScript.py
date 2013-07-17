@@ -276,14 +276,11 @@ class SpreadsheetScript():
 				return success_rate[code]
 			except KeyError, e:
 				print e
-<<<<<<< HEAD
-				
-=======
 
 	#took out the string variable that was below
 	#its replaced by self.today			
 	
->>>>>>> 0335d32d220e3fa5d9b2299f41513cb7f1fcf2af
+
 	def getRowNumber(self):
 		row_entry = self.client.GetListFeed(self.sheet_key, self.wksht_id)
 		row_ct = 2
@@ -461,10 +458,10 @@ class SpreadsheetScript():
 						self.createSpreadsheet(val)
 					except :	
 						with open("editlog.txt","a") as log :
-							log.write("\nCreation of new worksheet was Unsuccessful")
+							log.write("\nCreation of new Spreadsheet was Unsuccessful")
 					else :
 						with open("editlog.txt","a") as log :
-							log.write("\Creation of new worksheet was Successful")
+							log.write("\nCreation of new Spreadsheet was Successful")
 				else:
 					print 'Cannot find command: '+command
 			else:
@@ -713,9 +710,8 @@ def main():
 	
 	client = SpreadsheetScript(userVal, pwdVal, srcVal)
 
-	log = open("editlog.txt","a")
+	log = open("editlog.txt","a+")
 
-<<<<<<< HEAD
 	
 	
 	if operation == True and shortcode == True and insert == True and docName == True:
@@ -723,8 +719,6 @@ def main():
 		col = str(client.getOperationColumnNumber(operationVal, shortcodeVal))
 		client.updateCell(row+','+col+','+str(insertVal))
 	
-=======
->>>>>>> 0335d32d220e3fa5d9b2299f41513cb7f1fcf2af
 	if nSS == True:
 		client.createSpreadsheet(nSSVal)
 	client.sheet_key = client.getSpreadsheetKey(docNameVal)
@@ -830,11 +824,8 @@ def main():
 	if ext == True:
 		client.sendMail()
 		sys.exit(0)
-<<<<<<< HEAD
-=======
 
 	client.flow()
->>>>>>> 0335d32d220e3fa5d9b2299f41513cb7f1fcf2af
 		
 # if script is being run as a standalone application, its name attribute is __main__
 if __name__ == '__main__':

@@ -119,7 +119,11 @@ class SpreadsheetScript():
 	def getDate(self) :
 		currentDate = datetime.now()
 		currentDate = currentDate.strftime("%m/%d/%Y")
-		return currentDate
+		if currrentDate[0]=='0':
+			return currentDate
+		else:
+			return currentDate[1:]	
+		
 
 	# create a new Google spreadsheet in Drive
 	def createSpreadsheet(self, doc):
@@ -713,9 +717,9 @@ def main():
 	
 	
 	client = SpreadsheetScript(userVal, pwdVal, srcVal)
-<<<<<<< HEAD
+
 	log = open("editlog.txt","a")
-=======
+
 	
 	
 	if operation == True and shortcode == True and insert == True and docName == True:

@@ -84,7 +84,6 @@ class SpreadsheetScript():
 		PADDING = '{'
 		pad = lambda s: s + (BLOCK_SIZE - len(s) % BLOCK_SIZE) * PADDING
 		EncodeAES = lambda c, s: base64.b64encode(c.encrypt(pad(s)))
-		DecodeAES = lambda c, e: c.decrypt(base64.b64decode(e)).rstrip(PADDING)
 		# generate a random secret key
 		secret = os.urandom(BLOCK_SIZE)
 		# create a cipher object using the random secret
@@ -94,7 +93,14 @@ class SpreadsheetScript():
 		return encoded
 	
 	def __decrypt(self, enc):
-		return DecodeAES(cipher, encoded)
+		BLOCK_SIZE = 32
+		PADDING = '{'
+		# generate a random secret key
+		secret = os.urandom(BLOCK_SIZE)
+		# create a cipher object using the random secret
+		cipher = AES.new(secret)
+		DecodeAES = lambda c, e: c.decrypt(base64.b64decode(e)).rstrip(PADDING)
+		return DecodeAES(cipher, enc)
 		
 	def __store_cred(self, log_cred):
 		os.system("mkdir "+os.environ['HOME']+"/.hide")
@@ -487,7 +493,7 @@ def main():
 	
 	# check if user has entered the correct options
 	try:
-		opts, args = getopt.getopt(sys.argv[1:], "", ["user=", "pwd=", "src=", "docName=", "worksheet=", "pirnt", "help", "iRowVal=", "iColVal=", 
+		opts, args = getopt.getopt(sys.argv[1:], "", ["user=", "pwd=", "src=", "docName=", "worksheet=", "print", "help", "iRowVal=", "iColVal=", 
 	"iCellVal=", "dRowVal=", "dColVal=", "dCellVal=", "dRow=", "dWS=", "dSS=", "nSS=", "nWS=", "exit"])
 	except getopt.GetoptError, e:
 		print "python spreadsheetScript.py --help. For help:", e, "\n"
@@ -637,7 +643,7 @@ def main():
 	if ext == True:
 		sys.exit(2)
 	
-	"""	position = [str(client.getRowNumber('1/3/2013'))+','+str(client.getOperationColumnNumber('subscription growth','80102'))+','+'67785']
+	"""	position = (str(client.getRowNumber('1/3/2013'))+','+str(client.getOperationColumnNumber('subscription growth','80102'))+','+'67785').split()
 	print position
 	client.updateCell(position)	"""
 	client.flow()

@@ -713,9 +713,9 @@ def main():
 	
 	
 	client = SpreadsheetScript(userVal, pwdVal, srcVal)
-<<<<<<< HEAD
+
 	log = open("editlog.txt","a")
-=======
+
 	
 	
 	if operation == True and shortcode == True and insert == True and docName == True:
@@ -724,7 +724,7 @@ def main():
 		client.updateCell(row+','+col+','+str(insertVal))
 	
 	
->>>>>>> 776b91db0e7f380a382b942eaf7deef9393ef3c4
+
 	if nSS == True:
 		client.createSpreadsheet(nSSVal)
 	client.sheet_key = client.getSpreadsheetKey(docNameVal)
@@ -828,13 +828,12 @@ def main():
 		client.sendMail()
 		sys.exit(0)
 	
-<<<<<<< HEAD
 
-=======
+
 	"""	position = (str(client.getRowNumber('1/3/2013'))+','+str(client.getOperationColumnNumber('subscription growth','80102'))+','+'67785').split()
 	print position
 	client.updateCell(position)	"""
->>>>>>> 776b91db0e7f380a382b942eaf7deef9393ef3c4
+
 	client.flow()
 		
 # if script is being run as a standalone application, its name attribute is __main__

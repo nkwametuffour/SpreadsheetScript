@@ -119,11 +119,7 @@ class SpreadsheetScript():
 	def getDate(self) :
 		currentDate = datetime.now()
 		currentDate = currentDate.strftime("%m/%d/%Y")
-		if currrentDate[0]=='0':
-			return currentDate
-		else:
-			return currentDate[1:]	
-		
+		return str(currentDate).lstrip('0')
 
 	# create a new Google spreadsheet in Drive
 	def createSpreadsheet(self, doc):
@@ -280,7 +276,14 @@ class SpreadsheetScript():
 				return success_rate[code]
 			except KeyError, e:
 				print e
+<<<<<<< HEAD
 				
+=======
+
+	#took out the string variable that was below
+	#its replaced by self.today			
+	
+>>>>>>> 0335d32d220e3fa5d9b2299f41513cb7f1fcf2af
 	def getRowNumber(self):
 		row_entry = self.client.GetListFeed(self.sheet_key, self.wksht_id)
 		row_ct = 2
@@ -603,7 +606,7 @@ def main():
 	
 	# check if user has entered the correct options
 	try:
-		opts, args = getopt.getopt(sys.argv[1:], "", ["user=", "pwd=", "operation=", "shortcode=","insert=" "src=", "docName=", "worksheet=", "print", "help", "iRowVal=", "iColVal=", \
+		opts, args = getopt.getopt(sys.argv[1:], "", ["user=", "pwd=", "operation=", "shortcode=","insert=", "src=", "docName=", "worksheet=", "print", "help", "iRowVal=", "iColVal=", \
 		"iCellVal=", "dCellVal=", "dRow=", "dWS=", "dSS=", "nSS=", "nWS=", "exit"])
 	except getopt.GetoptError, e:
 		print "python spreadsheetScript.py --help. For help:", e, "\n"
@@ -625,7 +628,7 @@ def main():
 			operationVal = val
 		elif opt == "--shortcode":
 			shortcode = True
-			shortcodeCal = val
+			shortcodeVal = val
 		elif opt == "--insert":
 			insert = True
 			insertVal = val
@@ -707,14 +710,12 @@ def main():
 				print "You have to specify a new document"
 				SpreadsheetScript.getHelp()
 				sys.exit()
-			
-	
-	
 	
 	client = SpreadsheetScript(userVal, pwdVal, srcVal)
 
 	log = open("editlog.txt","a")
 
+<<<<<<< HEAD
 	
 	
 	if operation == True and shortcode == True and insert == True and docName == True:
@@ -722,6 +723,8 @@ def main():
 		col = str(client.getOperationColumnNumber(operationVal, shortcodeVal))
 		client.updateCell(row+','+col+','+str(insertVal))
 	
+=======
+>>>>>>> 0335d32d220e3fa5d9b2299f41513cb7f1fcf2af
 	if nSS == True:
 		client.createSpreadsheet(nSSVal)
 	client.sheet_key = client.getSpreadsheetKey(docNameVal)
@@ -737,15 +740,18 @@ def main():
 		else :
 			log.write("\Creation of new worksheet was Successful")
 			
-			
 		
-	
 	if worksheet == True :
 		client.wksht_id = client.getWorksheetIdByName(worksheetVal)
 	elif nWS == True:
 		client.wksht_id = client.getWorksheetIdByName(nWSVal)
 	else:
 		client.wksht_id = client.selectWorksheet(client.sheet_key, worksheetVal)
+		
+	if operation == True and shortcode == True and insert == True and docName == True:
+		row = str(client.getRowNumber())
+		col = str(client.getOperationColumnNumber(operationVal, shortcodeVal))
+		client.updateCell((row+','+col+','+str(insertVal)).split(';'))
 	
 	if iRowVal == True:
 		iRowValVal = iRowValVal.split(';')
@@ -824,6 +830,11 @@ def main():
 	if ext == True:
 		client.sendMail()
 		sys.exit(0)
+<<<<<<< HEAD
+=======
+
+	client.flow()
+>>>>>>> 0335d32d220e3fa5d9b2299f41513cb7f1fcf2af
 		
 # if script is being run as a standalone application, its name attribute is __main__
 if __name__ == '__main__':

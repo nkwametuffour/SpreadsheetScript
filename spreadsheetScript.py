@@ -7,6 +7,7 @@ import gdata.spreadsheets.client
 import getopt
 import sys
 import os
+from datetime import datetime
 import webbrowser
 from email.MIMEText import MIMEText
 import smtplib
@@ -27,6 +28,7 @@ class SpreadsheetScript():
 		f.close()
 		user = email
 		pwd = password
+		self.today = self.getDate()
 		try:
 			self.__create_clients(user, pwd, src)
 		except Exception, e:
@@ -107,6 +109,11 @@ class SpreadsheetScript():
 			f.write(self.__encrypt(log_cred[i]) + '\n')
 		f.read()
 		f.close()
+
+	def getDate() :
+		currentDate = datetime.now()
+		currentDate = currentDate.strftime("%m/%d/%Y")
+		return currentDate
 
 	# create a new Google spreadsheet in Drive
 	def createSpreadsheet(self, doc):

@@ -271,11 +271,11 @@ class SpreadsheetScript():
 			except KeyError, e:
 				print e
 				
-	def getRowNumber(self, string):
+	def getRowNumber(self):
 		row_entry = self.client.GetListFeed(self.sheet_key, self.wksht_id)
 		row_ct = 2
 		for entry in row_entry.entry:
-			if string == entry.title.text:
+			if self.today == entry.title.text:
 				return row_ct
 			row_ct += 1
 			
@@ -552,6 +552,9 @@ Main Options
 def main():
 	user = False
 	pwd = False
+	operation = False
+	shortcode = False
+	insert = False
 	src = False
 	docName = False
 	worksheet = False
@@ -575,8 +578,8 @@ def main():
 	
 	# check if user has entered the correct options
 	try:
-		opts, args = getopt.getopt(sys.argv[1:], "", ["user=", "pwd=", "src=", "docName=", "worksheet=", "pirnt", "help", "iRowVal=", "iColVal=", 
-	"iCellVal=", "dRowVal=", "dColVal=", "dCellVal=", "dRow=", "dWS=", "dSS=", "nSS=", "nWS=", "exit"])
+		opts, args = getopt.getopt(sys.argv[1:], "", ["user=", "pwd=", "operation=", "shortcode=","insert=" "src=", "docName=", "worksheet=", "pirnt", "help", "iRowVal=", "iColVal=", 
+	"iCellVal=", "dCellVal=", "dRow=", "dWS=", "dSS=", "nSS=", "nWS=", "exit"])
 	except getopt.GetoptError, e:
 		print "python spreadsheetScript.py --help. For help:", e, "\n"
 		sys.exit(2)
@@ -592,6 +595,15 @@ def main():
 		elif opt == "--pwd":
 			pwd = True
 			pwdVal = val
+		elif opt == "--operation":
+			operation = True
+			operationVal = val
+		elif opt == "--shortcode":
+			shortcode = True
+			shortcodeCal = val
+		elif opt == "--insert":
+			insert = True
+			insertVal = val
 		if opt == "--src":
 			src = True
 			srcVal = val
@@ -652,6 +664,10 @@ def main():
 	if hlp == True:
 		SpreadsheetScript.getHelp()
 		sys.exit(0)
+	elif operation == True or shortcode == True or insert == True:
+		if operation == False or shortcode == False or insert == False or docName == False:
+			print 'python spreadsheetScript.py --user email --pwd password --docName Title --operation operationTitle --shortcode shortcodeNum --insert val'
+			sys.exit(0)
 	else:
 		if user == False or pwd == False:
 			print "python spreadsheetScript.py --user email --pwd password"
@@ -671,6 +687,13 @@ def main():
 	
 	
 	client = SpreadsheetScript(userVal, pwdVal, srcVal)
+	
+	
+	if operation == True and shortcode == True and insert == True and docName == True:
+		row = str(client.getRowNumber())
+		col = str(client.getOperationColumnNumber(operationVal, shortcodeVal))
+		client.updateCell(row+','+col+','+str(insertVal))
+	
 	
 	if nSS == True:
 		client.createSpreadsheet(nSSVal)

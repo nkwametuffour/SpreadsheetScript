@@ -25,6 +25,7 @@ class SpreadsheetScript():
 	def __init__(self, email, password, src='Default'):
 		user = email
 		pwd = password
+		self.today = self.getDate()
 		try:
 			self.__create_clients(user, pwd, src)
 		except Exception, e:
@@ -105,6 +106,11 @@ class SpreadsheetScript():
 			f.write(self.__encrypt(log_cred[i]) + '\n')
 		f.read()
 		f.close()
+
+	def getDate() :
+		currentDate = datetime.now()
+		currentDate = currentDate.strftime("%m/%d/%Y")
+		return currentDate
 
 	# create a new Google spreadsheet in Drive
 	def createSpreadsheet(self, doc):

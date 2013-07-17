@@ -603,7 +603,7 @@ def main():
 	
 	# check if user has entered the correct options
 	try:
-		opts, args = getopt.getopt(sys.argv[1:], "", ["user=", "pwd=", "operation=", "shortcode=","insert=", "src=", "docName=", "worksheet=", "print", "help", "iRowVal=", "iColVal=", \
+		opts, args = getopt.getopt(sys.argv[1:], "", ["user=", "pwd=", "operation=", "shortcode=","insert=", "src=", "docName=", "worksheet=", "print", "help", "iRowVal=", "iColVal=",
 		"iCellVal=", "dCellVal=", "dRow=", "dWS=", "dSS=", "nSS=", "nWS=", "exit"])
 	except getopt.GetoptError, e:
 		print "python spreadsheetScript.py --help. For help:", e, "\n"

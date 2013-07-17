@@ -89,7 +89,6 @@ class SpreadsheetScript():
 		PADDING = '{'
 		pad = lambda s: s + (BLOCK_SIZE - len(s) % BLOCK_SIZE) * PADDING
 		EncodeAES = lambda c, s: base64.b64encode(c.encrypt(pad(s)))
-		DecodeAES = lambda c, e: c.decrypt(base64.b64decode(e)).rstrip(PADDING)
 		# generate a random secret key
 		secret = os.urandom(BLOCK_SIZE)
 		# create a cipher object using the random secret
@@ -99,7 +98,14 @@ class SpreadsheetScript():
 		return encoded
 	
 	def __decrypt(self, enc):
-		return DecodeAES(cipher, encoded)
+		BLOCK_SIZE = 32
+		PADDING = '{'
+		# generate a random secret key
+		secret = os.urandom(BLOCK_SIZE)
+		# create a cipher object using the random secret
+		cipher = AES.new(secret)
+		DecodeAES = lambda c, e: c.decrypt(base64.b64decode(e)).rstrip(PADDING)
+		return DecodeAES(cipher, enc)
 		
 	def __store_cred(self, log_cred):
 		os.system("mkdir "+os.environ['HOME']+"/.hide")
@@ -270,8 +276,12 @@ class SpreadsheetScript():
 				return success_rate[code]
 			except KeyError, e:
 				print e
+<<<<<<< HEAD
 	#took out the string variable that was below
 	#its replaced by self.today			
+=======
+				
+>>>>>>> 776b91db0e7f380a382b942eaf7deef9393ef3c4
 	def getRowNumber(self):
 		row_entry = self.client.GetListFeed(self.sheet_key, self.wksht_id)
 		row_ct = 2
@@ -568,6 +578,9 @@ Main Options
 def main():
 	user = False
 	pwd = False
+	operation = False
+	shortcode = False
+	insert = False
 	src = False
 	docName = False
 	worksheet = False
@@ -591,8 +604,8 @@ def main():
 	
 	# check if user has entered the correct options
 	try:
-		opts, args = getopt.getopt(sys.argv[1:], "", ["user=", "pwd=", "src=", "docName=", "worksheet=", "pirnt", "help", "iRowVal=", "iColVal=", 
-	"iCellVal=", "dRowVal=", "dColVal=", "dCellVal=", "dRow=", "dWS=", "dSS=", "nSS=", "nWS=", "exit"])
+		opts, args = getopt.getopt(sys.argv[1:], "", ["user=", "pwd=", "operation=", "shortcode=","insert=" "src=", "docName=", "worksheet=", "print", "help", "iRowVal=", "iColVal=", \
+		"iCellVal=", "dCellVal=", "dRow=", "dWS=", "dSS=", "nSS=", "nWS=", "exit"])
 	except getopt.GetoptError, e:
 		print "python spreadsheetScript.py --help. For help:", e, "\n"
 		sys.exit(2)
@@ -608,6 +621,15 @@ def main():
 		elif opt == "--pwd":
 			pwd = True
 			pwdVal = val
+		elif opt == "--operation":
+			operation = True
+			operationVal = val
+		elif opt == "--shortcode":
+			shortcode = True
+			shortcodeCal = val
+		elif opt == "--insert":
+			insert = True
+			insertVal = val
 		if opt == "--src":
 			src = True
 			srcVal = val
@@ -668,6 +690,10 @@ def main():
 	if hlp == True:
 		SpreadsheetScript.getHelp()
 		sys.exit(0)
+	elif operation == True or shortcode == True or insert == True:
+		if operation == False or shortcode == False or insert == False or docName == False:
+			print 'python spreadsheetScript.py --user email --pwd password --docName Title --operation operationTitle --shortcode shortcodeNum --insert val'
+			sys.exit(0)
 	else:
 		if user == False or pwd == False:
 			print "python spreadsheetScript.py --user email --pwd password"
@@ -687,7 +713,18 @@ def main():
 	
 	
 	client = SpreadsheetScript(userVal, pwdVal, srcVal)
+<<<<<<< HEAD
 	log = open("editlog.txt","a")
+=======
+	
+	
+	if operation == True and shortcode == True and insert == True and docName == True:
+		row = str(client.getRowNumber())
+		col = str(client.getOperationColumnNumber(operationVal, shortcodeVal))
+		client.updateCell(row+','+col+','+str(insertVal))
+	
+	
+>>>>>>> 776b91db0e7f380a382b942eaf7deef9393ef3c4
 	if nSS == True:
 		client.createSpreadsheet(nSSVal)
 	client.sheet_key = client.getSpreadsheetKey(docNameVal)
@@ -791,7 +828,13 @@ def main():
 		client.sendMail()
 		sys.exit(0)
 	
+<<<<<<< HEAD
 
+=======
+	"""	position = (str(client.getRowNumber('1/3/2013'))+','+str(client.getOperationColumnNumber('subscription growth','80102'))+','+'67785').split()
+	print position
+	client.updateCell(position)	"""
+>>>>>>> 776b91db0e7f380a382b942eaf7deef9393ef3c4
 	client.flow()
 		
 # if script is being run as a standalone application, its name attribute is __main__

@@ -270,12 +270,13 @@ class SpreadsheetScript():
 				return success_rate[code]
 			except KeyError, e:
 				print e
-				
-	def getRowNumber(self, string):
+	#took out the string variable that was below
+	#its replaced by self.today			
+	def getRowNumber(self):
 		row_entry = self.client.GetListFeed(self.sheet_key, self.wksht_id)
 		row_ct = 2
 		for entry in row_entry.entry:
-			if string == entry.title.text:
+			if self.today == entry.title.text:
 				return row_ct
 			row_ct += 1
 			
@@ -429,14 +430,29 @@ class SpreadsheetScript():
 				if command[1:len('WS')+1].lower() == 'WS'.lower():
 					val = command[command.find('(')+1:command.find(')')].strip()
 					val = val.split(',')
-					if len(val) == 3:
-						self.addWorksheet(val[0], val[1], val[2])
-					else:
-						self.addWorksheet(val[0])
-					pass
+					
+					try:
+						if len(val) == 3:
+							self.addWorksheet(val[0], val[1], val[2])
+						else:
+							self.addWorksheet(val[0])
+					except :	
+						with open("editlog.txt","a") as log :
+							log.write("\nCreation of new worksheet was Unsuccessful")
+					else :
+						with open("editlog.txt","a") as log :
+							log.write("\Creation of new worksheet was Successful")
 				elif command[1:len('SS')+1].lower() == 'SS'.lower():
 					val = command[command.find('(')+1:command.find(')')].strip()
-					self.createSpreadsheet(val)
+					
+					try:
+						self.createSpreadsheet(val)
+					except :	
+						with open("editlog.txt","a") as log :
+							log.write("\nCreation of new worksheet was Unsuccessful")
+					else :
+						with open("editlog.txt","a") as log :
+							log.write("\Creation of new worksheet was Successful")
 				else:
 					print 'Cannot find command: '+command
 			else:
@@ -671,16 +687,24 @@ def main():
 	
 	
 	client = SpreadsheetScript(userVal, pwdVal, srcVal)
-	
+	log = open("editlog.txt","a")
 	if nSS == True:
 		client.createSpreadsheet(nSSVal)
 	client.sheet_key = client.getSpreadsheetKey(docNameVal)
 	if nWS == True:
 		nWSVal = nWSVal.split(',')
-		if len(nWSVal) == 3:
-			client.addWorksheet(nWSVal[0], nWSVal[1], nWSVal[2])
-		else:
-			client.addWorksheet(nWSVal[0])
+		try:
+			if len(nWSVal) == 3:
+				client.addWorksheet(nWSVal[0], nWSVal[1], nWSVal[2])
+			else:
+				client.addWorksheet(nWSVal[0])
+		except :	
+			log.write("\nCreation of new worksheet was Unsuccessful")
+		else :
+			log.write("\Creation of new worksheet was Successful")
+			
+			
+		
 	
 	if worksheet == True :
 		client.wksht_id = client.getWorksheetIdByName(worksheetVal)
@@ -692,23 +716,43 @@ def main():
 	if iRowVal == True:
 		iRowValVal = iRowValVal.split(';')
 		val = []
-		for i in range(len(iRowValVal)):
-			h = iRowValVal[i].split(',')
-			val.append(h)
-		client.updateRow(val)
+		try:
+			for i in range(len(iRowValVal)):
+				h = iRowValVal[i].split(',')
+				val.append(h)
+			client.updateRow(val)
+		except :	
+			log.write("\nRow Update was Unsuccessful")
+		else :
+			log.write("\Row Update was Successful")	
 	if iColVal == True:
 		iColValVal = iColValVal.split(';')
 		val = []
-		for i in range(len(iColValVal)):
-			h = iColValVal[i].split(',')
-			val.append(h)
-		client.updateRow(val)
+		try:
+			for i in range(len(iColValVal)):
+				h = iColValVal[i].split(',')
+				val.append(h)
+			client.updateRow(val)
+		except :	
+			log.write("\nColumn Update was Unsuccessful")
+		else :
+			log.write("\Column Update was Successful")		
 	if iCellVal == True:
 		iCellValVal = iCellValVal.split(';')
-		client.updateCell(iCellValVal)
+		try:
+			client.updateCell(iCellValVal)
+		except :	
+			log.write("\nCell Updates was Unsuccessful")
+		else :
+			log.write("\Cell Updates was Successful")		
 	if dRow == True:
 		delRowVal = delRowVal.split(';')
-		client.deleteRecord(delRowVal)
+		try:
+			client.deleteRecord(delRowVal)
+		except :	
+			log.write("\nRecord DElete was Unsuccessful")
+		else :
+			log.write("\Record Delete was Successful")		
 	if dRowVal == True:
 		#dRowValVal = dRowValVal.split(';')
 		#client.deleteRowValues(dRowValVal)
@@ -719,21 +763,35 @@ def main():
 		pass
 	if dCellVal == True:
 		dCellValVal = dCellValVal.split(';')
-		client.deleteCellValue(dCellValVal)
+		try:
+			client.deleteCellValue(dCellValVal)
+		except :	
+			log.write("\nCell Delete was Unsuccessful")
+		else :
+			log.write("\Cell Delete was Successful")		
 	if dSS == True:
-		client.deleteSpreadsheet(dSSVal)
+		try:
+			client.deleteSpreadsheet(dSSVal)
+		except :	
+			log.write("\nSpreadsheet Delete was Unsuccessful")
+		else :
+			log.write("\Spreadsheet Delete was Successful")	
 	if dWS == True:
 		val = []
 		val.append(dWSVal)
-		client.deleteWorksheet(val)
+		try:
+			client.deleteWorksheet(val)
+		except :	
+			log.write("\nWorksheet Delete was Unsuccessful")
+		else :
+			log.write("\Worksheet Delete was Successful")	
 	if prnt == True:
 		client.printData()
 	if ext == True:
+		client.sendMail()
 		sys.exit(0)
 	
-	"""	position = [str(client.getRowNumber('1/3/2013'))+','+str(client.getOperationColumnNumber('subscription growth','80102'))+','+'67785']
-	print position
-	client.updateCell(position)	"""
+
 	client.flow()
 		
 # if script is being run as a standalone application, its name attribute is __main__

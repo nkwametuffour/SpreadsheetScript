@@ -304,9 +304,9 @@ class SpreadsheetScript():
 					val = val.split(';')
 					self.deleteCellValue(val)
 				elif command[1:len('RowVal')+1].lower() == 'RowVal'.lower():
-					#val = command[command.find('(')+1:command.find(')')]
-					#val = val.split(';')
-					#self.deleteRowValues(docmnt, val)
+					val = command[command.find('(')+1:command.find(')')]
+					val = val.split(';')
+					self.deleteRowValues(val)
 					pass
 				elif command[1:len('ColVal')+1].lower() == 'ColVal'.lower():
 					#val = command[command.find('(')+1:command.find(')')]
@@ -364,7 +364,18 @@ class SpreadsheetScript():
 				else:
 					print 'Cannot find command: '+command
 				#pass
-			
+
+	def deleteRowValues(self, row_index) :
+		#Puts an empty string in the specified cell
+		'''for index in row_index :
+			feed = self.client.GetListFeed(self.sheet_key, self.wksht_id)
+			row = feed.entry[int(index)]
+			self.client.UpdateRow(row)'''
+			pass
+
+	def deleteColValues(self, ) :
+		pass
+					
 		
 	def updateCell(self, cellAndVal):
 		#Overwrites the value in the cell specified with new_value

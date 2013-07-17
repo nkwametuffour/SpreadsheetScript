@@ -280,12 +280,7 @@ class SpreadsheetScript():
 				return success_rate[code]
 			except KeyError, e:
 				print e
-<<<<<<< HEAD
-	#took out the string variable that was below
-	#its replaced by self.today			
-=======
 				
->>>>>>> 776b91db0e7f380a382b942eaf7deef9393ef3c4
 	def getRowNumber(self):
 		row_entry = self.client.GetListFeed(self.sheet_key, self.wksht_id)
 		row_ct = 2
@@ -727,8 +722,6 @@ def main():
 		col = str(client.getOperationColumnNumber(operationVal, shortcodeVal))
 		client.updateCell(row+','+col+','+str(insertVal))
 	
-	
->>>>>>> 776b91db0e7f380a382b942eaf7deef9393ef3c4
 	if nSS == True:
 		client.createSpreadsheet(nSSVal)
 	client.sheet_key = client.getSpreadsheetKey(docNameVal)
@@ -831,15 +824,6 @@ def main():
 	if ext == True:
 		client.sendMail()
 		sys.exit(0)
-	
-<<<<<<< HEAD
-
-=======
-	"""	position = (str(client.getRowNumber('1/3/2013'))+','+str(client.getOperationColumnNumber('subscription growth','80102'))+','+'67785').split()
-	print position
-	client.updateCell(position)	"""
->>>>>>> 776b91db0e7f380a382b942eaf7deef9393ef3c4
-	client.flow()
 		
 # if script is being run as a standalone application, its name attribute is __main__
 if __name__ == '__main__':

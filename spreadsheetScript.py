@@ -567,7 +567,7 @@ def main():
 	else:
 		if user == False or pwd == False:
 			print "python spreadsheetScript.py --user email --pwd password"
-			SpreadsheetScript.getHelp()
+			print "python spreadsheetScript.py --help"
 			sys.exit(0)
 		if docName == False and nSS == False:
 			print "You have to specify a document or create a new Spreadsheet to work with"

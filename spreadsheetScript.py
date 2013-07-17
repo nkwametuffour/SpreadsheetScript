@@ -280,12 +280,8 @@ class SpreadsheetScript():
 				return success_rate[code]
 			except KeyError, e:
 				print e
-<<<<<<< HEAD
 	#took out the string variable that was below
 	#its replaced by self.today			
-=======
-				
->>>>>>> 776b91db0e7f380a382b942eaf7deef9393ef3c4
 	def getRowNumber(self):
 		row_entry = self.client.GetListFeed(self.sheet_key, self.wksht_id)
 		row_ct = 2
@@ -590,25 +586,21 @@ def main():
 	worksheet = False
 	prnt = False
 	hlp = False
-	#iRow = False
 	iRowVal = False
 	iColVal = False
 	iCellVal = False
-	dRowVal = False
-	dColVal = False
 	dCellVal= False
 	dRow = False
 	dWS = False
 	dSS = False
-	#cWS = False
-	#cSS = False
 	nSS = False
 	nWS = False
 	ext = False
 	
 	# check if user has entered the correct options
 	try:
-		opts, args = getopt.getopt(sys.argv[1:], "", ["user=", "pwd=", "operation=", "shortcode=","insert=" "src=", "docName=", "worksheet=", "print", "help", "iRowVal=", "iColVal=", \
+		opts, args = getopt.getopt(sys.argv[1:], "", ["user=", "pwd=", "operation=", "shortcode=","insert=" "src=", "docName=",
+		"worksheet=", "print", "help", "iRowVal=", "iColVal=",
 		"iCellVal=", "dCellVal=", "dRow=", "dWS=", "dSS=", "nSS=", "nWS=", "exit"])
 	except getopt.GetoptError, e:
 		print "python spreadsheetScript.py --help. For help:", e, "\n"
@@ -664,12 +656,6 @@ def main():
 		elif opt == "--iCellVal":
 			iCellVal = True
 			iCellValVal = val
-		elif opt == "--dRowVal":
-			dRowVal = True
-			dRowValVal = val
-		elif opt == "--dColVal":
-			dColVal = True
-			dColValVal = val
 		elif opt == "--dCellVal":
 			dCellVal = True
 			dCellValVal = val
@@ -682,14 +668,7 @@ def main():
 		elif opt == "--dSS":
 			dSS = True	
 			dSSVal = val
-		'''elif opt == "--cWS":
-			cWS = True	
-			cWSVal = val
-		elif opt == "--cSS":
-			cSS = True	
-			cSSVal = val'''
 	
-	#worksheet = True
 	
 	if hlp == True:
 		SpreadsheetScript.getHelp()
@@ -712,22 +691,14 @@ def main():
 				print "You have to specify a new document"
 				SpreadsheetScript.getHelp()
 				sys.exit()
-			
-	
-	
-	
+				
 	client = SpreadsheetScript(userVal, pwdVal, srcVal)
-
 	log = open("editlog.txt","a")
 
-	
-	
 	if operation == True and shortcode == True and insert == True and docName == True:
 		row = str(client.getRowNumber())
 		col = str(client.getOperationColumnNumber(operationVal, shortcodeVal))
 		client.updateCell(row+','+col+','+str(insertVal))
-	
-	
 
 	if nSS == True:
 		client.createSpreadsheet(nSSVal)
@@ -794,14 +765,6 @@ def main():
 			log.write("\nRecord DElete was Unsuccessful")
 		else :
 			log.write("\Record Delete was Successful")		
-	if dRowVal == True:
-		#dRowValVal = dRowValVal.split(';')
-		#client.deleteRowValues(dRowValVal)
-		pass
-	if dColVal == True:
-		#dColValVal = dColValVal.split(';')
-		#client.deleteColValues(dRowValVal)
-		pass
 	if dCellVal == True:
 		dCellValVal = dCellValVal.split(';')
 		try:

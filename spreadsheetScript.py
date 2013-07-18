@@ -27,7 +27,7 @@ class SpreadsheetScript():
 	def __init__(self, email, password, src='Default'):
 		f = open("editlog.txt","w")
 		f.close()
-		self.config = Csv_config()
+		self.config = Csv_config.Csv_config()
 		#csv_config is the string of the file path of the configuration file
 		self.spreadsheetDict = self.config.buildDictionary("config.csv")
 		user = email

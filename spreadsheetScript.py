@@ -431,17 +431,10 @@ class SpreadsheetScript():
 						self.createSpreadsheet(val)
 					except :	
 						with open("editlog.txt","a") as log :
-<<<<<<< HEAD
 							log.write("\nCreation of new spreadsheet was Unsuccessful")
 					else :
 						with open("editlog.txt","a") as log :
 							log.write("\nCreation of new spreadsheet was Successful")
-=======
-							log.write("\nCreation of new Spreadsheet was Unsuccessful")
-					else :
-						with open("editlog.txt","a") as log :
-							log.write("\nCreation of new Spreadsheet was Successful")
->>>>>>> 492de6c221601c3362c37a97f1ae352f566594f2
 				else:
 					print 'Cannot find command: '+command
 			else:

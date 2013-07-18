@@ -513,7 +513,9 @@ USAGE
 	python spreadsheetScript [OPTIONS]
 
 OVERVIEW
-	spreadsheetScript script enables access to the spreadsheet files in a Google Drive account using OAuth2.0 authentication.
+	spreadsheetScript script enables users access to their Google Drive accounts, where they can have access to spreadsheet documents
+	in their Drive. Users can also create and delete spreadsheets, create and delete worksheets, insert and delete values in the 
+	spreadsheet cells.
 
 OPTIONS
 Generic Script Information
@@ -521,24 +523,40 @@ Generic Script Information
 		Displays this documentation of the script, and then exits
 	
 Main Options
+	--user
+		Takes in the email of the user.
+	--pwd
+		Takes in the password of the user.
 	--src
 		Provide the spreadsheet source name (like a project name, not spreadsheet name).
 	--docName
 		Enter the title of an existing spreadsheet document to work with.
-	--new
-		Creates a new spreadsheet document and names it with the string provided after --new.
-	--edit
-		Edit column, row and cell values
-	--rmv
+	--worksheet
+		Takes the title of a worksheet in a particular spreadsheet. If not specified, the first worksheet is used.
+	--nSS
+		Creates a new spreadsheet document and names it with the string provided after --nSS.
+	--nWS
+		Creates a new worksheet in the current spreadsheet and names it with the string provided after --nWS.
+	--dSS
 		Remove the spreadsheet with the title provided, from Drive.
-	--del
-		Delete cells entire rows from the spreadsheet.
-	--delVal
-		Deletes the value in a cell
+	--dWS
+		Remove the worksheet with the title provided, from the current spreadsheet.
+	--iRowVal
+		Inserts values into a row; cell after cell, specified by row number, column number, and values as comma-separated values.
+		Multiple insertions are distinguished by ; separation.
+	--iColVal
+		Inserts values into a column; cell after cell, specified by row number, column number, and values as comma-separated values.
+		Multiple insertions are distinguished by ; separation.
+	--iCellVal
+		Inserts a value in a cell, specified by row number, column number, and value as comma-separated values.
+		Multiple insertions are distinguished by ; separation.
 	--print
 		Does not take any character after it, if specified will print the contents of the document name provided.
 	--help
 		Prints this screen
+	--exit
+		Exits script execution after all commands specified in the initial command string have been executed.
+		Enables one time script execution.
 	"""
 	
 def main():

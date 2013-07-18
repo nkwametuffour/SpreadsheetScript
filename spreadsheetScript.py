@@ -684,13 +684,6 @@ def main():
 	client = SpreadsheetScript(userVal, pwdVal, srcVal)
 
 	log = open("editlog.txt","a+")
-
-	
-	
-	if operation == True and shortcode == True and insert == True and docName == True:
-		row = str(client.getRowNumber())
-		col = str(client.getOperationColumnNumber(operationVal, shortcodeVal))
-		client.updateCell(row+','+col+','+str(insertVal))
 	
 	if nSS == True:
 		client.createSpreadsheet(nSSVal)

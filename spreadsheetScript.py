@@ -1,4 +1,5 @@
 #!/usr/bin/python
+import Csv_config
 import gdata.spreadsheet.service
 import gdata
 import gdata.client
@@ -26,6 +27,9 @@ class SpreadsheetScript():
 	def __init__(self, email, password, src='Default'):
 		f = open("editlog.txt","w")
 		f.close()
+		self.config = Csv_config()
+		#csv_config is the string of the file path of the configuration file
+		self.spreadsheetDict = self.config.buildDictionary("config.csv")
 		user = email
 		pwd = password
 		self.today = self.getDate()
@@ -246,41 +250,10 @@ class SpreadsheetScript():
 			print 'Record delete unsuccessful'
 			
 	def getOperationColumnNumber(self, operation, code):
-		if operation.lower() == 'subscription':
-			subscription = {'80101':2, '80102':3, '40601':4, '1988':5, '80104 -2nd Del':6, '80104 - low P':7, '80107':8}
-			try:
-				return subscription[code]
-			except KeyError, e:
-				print e
-		elif operation.lower() == 'subscription growth':
-			subscription_growth = {'80101':10, '80102':11, '40601':12, '1988':13, '80104':14}
-			try:
-				return subscription_growth[code]
-			except KeyError, e:
-				print e
-		elif operation.lower() == 'pushed msgs':
-			pushed_msgs = {'80101':16, '80102':17, '40601':18, '1988':19, '80104':20}
-			try:
-				return pushed_msgs[code]
-			except KeyError, e:
-				print e
-		elif operation.lower() == 'successfully billed msgs':
-			success_billed = {'80101':22, '80102':23, '40601':24, '1988':25, '80104 -2nd Del':26, '80104 - low P':27, '80107':28}
-			try:
-				return success_billed[code]
-			except KeyError, e:
-				print e
-		elif operation.lower() == 'success rate':
-			success_rate = {'80101':29, '80102':30, '40601':31, '1988':32, '80104 -2nd Del':33, '80104 - low P':34, '80107':35}
-			try:
-				return success_rate[code]
-			except KeyError, e:
-				print e
-
+		col_number = self.config.searchDOD(operation, code, self.spreadsheetDict)
+		return int(col_number)
 	#took out the string variable that was below
 	#its replaced by self.today			
-	
-
 	def getRowNumber(self):
 		row_entry = self.client.GetListFeed(self.sheet_key, self.wksht_id)
 		row_ct = 2

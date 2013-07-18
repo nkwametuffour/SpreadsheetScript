@@ -251,7 +251,7 @@ class SpreadsheetScript():
 			
 	def getOperationColumnNumber(self, operation, code):
 		col_number = self.config.searchDOD(operation, code, self.spreadsheetDict)
-		return int(col_number)
+		return str(col_number)
 	#took out the string variable that was below
 	#its replaced by self.today			
 	def getRowNumber(self):
@@ -431,17 +431,12 @@ class SpreadsheetScript():
 						self.createSpreadsheet(val)
 					except :	
 						with open("editlog.txt","a") as log :
-<<<<<<< HEAD
+
 							log.write("\nCreation of new spreadsheet was Unsuccessful")
 					else :
 						with open("editlog.txt","a") as log :
 							log.write("\nCreation of new spreadsheet was Successful")
-=======
-							log.write("\nCreation of new Spreadsheet was Unsuccessful")
-					else :
-						with open("editlog.txt","a") as log :
-							log.write("\nCreation of new Spreadsheet was Successful")
->>>>>>> 492de6c221601c3362c37a97f1ae352f566594f2
+
 				else:
 					print 'Cannot find command: '+command
 			else:
@@ -557,8 +552,6 @@ Main Options
 def main():
 	user = False
 	pwd = False
-	operation = False
-	shortcode = False
 	insert = False
 	src = False
 	docName = False
@@ -583,7 +576,7 @@ def main():
 	
 	# check if user has entered the correct options
 	try:
-		opts, args = getopt.getopt(sys.argv[1:], "", ["user=", "pwd=", "operation=", "shortcode=","insert=", "src=", "docName=", "worksheet=", "print", "help", "iRowVal=", "iColVal=", \
+		opts, args = getopt.getopt(sys.argv[1:], "", ["user=", "pwd=", "insert=", "src=", "docName=", "worksheet=", "print", "help", "iRowVal=", "iColVal=", \
 		"iCellVal=", "dCellVal=", "dRow=", "dWS=", "dSS=", "nSS=", "nWS=", "exit"])
 	except getopt.GetoptError, e:
 		print "python spreadsheetScript.py --help. For help:", e, "\n"
@@ -600,12 +593,6 @@ def main():
 		elif opt == "--pwd":
 			pwd = True
 			pwdVal = val
-		elif opt == "--operation":
-			operation = True
-			operationVal = val
-		elif opt == "--shortcode":
-			shortcode = True
-			shortcodeVal = val
 		elif opt == "--insert":
 			insert = True
 			insertVal = val
@@ -669,10 +656,6 @@ def main():
 	if hlp == True:
 		SpreadsheetScript.getHelp()
 		sys.exit(0)
-	elif operation == True or shortcode == True or insert == True:
-		if operation == False or shortcode == False or insert == False or docName == False:
-			print 'python spreadsheetScript.py --user email --pwd password --docName Title --operation operationTitle --shortcode shortcodeNum --insert val'
-			sys.exit(0)
 	else:
 		if user == False or pwd == False:
 			print "python spreadsheetScript.py --user email --pwd password"
@@ -715,10 +698,16 @@ def main():
 	else:
 		client.wksht_id = client.selectWorksheet(client.sheet_key, worksheetVal)
 		
-	if operation == True and shortcode == True and insert == True and docName == True:
+	if insert == True and docName == True:
 		row = str(client.getRowNumber())
-		col = str(client.getOperationColumnNumber(operationVal, shortcodeVal))
-		client.updateCell((row+','+col+','+str(insertVal)).split(';'))
+		set_of_values = insertVal.split(";")
+		valueToPass = []
+		for each_set in set_of_values :
+			spl_val = each_set.split(",")
+			col = str(client.getOperationColumnNumber(spl_val[0], spl_val[1]))
+			valueToPass.append(row+","+col+","+str(spl_val[2]))
+		
+		client.updateCell(valueToPass)
 	
 	if iRowVal == True:
 		iRowValVal = iRowValVal.split(';')

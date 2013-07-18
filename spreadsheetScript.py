@@ -32,7 +32,6 @@ class SpreadsheetScript():
 		user = email
 		pwd = password
 		self.today = self.getDate()
-		print self.today
 		try:
 			self.__create_clients(user, pwd, src)
 		except Exception, e:

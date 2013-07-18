@@ -32,6 +32,7 @@ class SpreadsheetScript():
 		user = email
 		pwd = password
 		self.today = self.getDate()
+		print self.today
 		try:
 			self.__create_clients(user, pwd, src)
 		except Exception, e:
@@ -122,7 +123,7 @@ class SpreadsheetScript():
 	def getDate(self) :
 		currentDate = datetime.now()
 		currentDate = currentDate.strftime("%m/%d/%Y")
-		return str(currentDate).lstrip('0')
+		return currentDate.replace('/0', '0').lstrip('0')
 
 	# create a new Google spreadsheet in Drive
 	def createSpreadsheet(self, doc):

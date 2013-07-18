@@ -1,4 +1,5 @@
 #!/usr/bin/python
+import csv_config
 import gdata.spreadsheet.service
 import gdata
 import gdata.client
@@ -25,6 +26,9 @@ class SpreadsheetScript():
 	def __init__(self, email, password, src='Default'):
 		f = open("editlog.txt","w")
 		f.close()
+		self.config = csv_config.Csv_config()
+		#csv_config is the string of the file path of the configuration file
+		self.spreadsheetDict = self.config.buildDictionary("config.csv")
 		user = email
 		pwd = password
 		self.today = self.getDate()
@@ -75,7 +79,8 @@ class SpreadsheetScript():
 		return [token.refresh_token, token.access_token]
 		
 	def __store_token(self, accs_data):
-		os.system("mkdir "+os.environ['HOME']+"/.hide")
+		os.system("mkdi
+		r "+os.environ['HOME']+"/.hide")
 		os.system("touch tokens.txt")
 		f = open(os.environ['HOME']+'/.hide/tokens.txt','w+')
 		for i in range(len(accs_data)):
@@ -245,41 +250,10 @@ class SpreadsheetScript():
 			print 'Record delete unsuccessful'
 			
 	def getOperationColumnNumber(self, operation, code):
-		if operation.lower() == 'subscription':
-			subscription = {'80101':2, '80102':3, '40601':4, '1988':5, '80104 -2nd Del':6, '80104 - low P':7, '80107':8}
-			try:
-				return subscription[code]
-			except KeyError, e:
-				print e
-		elif operation.lower() == 'subscription growth':
-			subscription_growth = {'80101':10, '80102':11, '40601':12, '1988':13, '80104':14}
-			try:
-				return subscription_growth[code]
-			except KeyError, e:
-				print e
-		elif operation.lower() == 'pushed msgs':
-			pushed_msgs = {'80101':16, '80102':17, '40601':18, '1988':19, '80104':20}
-			try:
-				return pushed_msgs[code]
-			except KeyError, e:
-				print e
-		elif operation.lower() == 'successfully billed msgs':
-			success_billed = {'80101':22, '80102':23, '40601':24, '1988':25, '80104 -2nd Del':26, '80104 - low P':27, '80107':28}
-			try:
-				return success_billed[code]
-			except KeyError, e:
-				print e
-		elif operation.lower() == 'success rate':
-			success_rate = {'80101':29, '80102':30, '40601':31, '1988':32, '80104 -2nd Del':33, '80104 - low P':34, '80107':35}
-			try:
-				return success_rate[code]
-			except KeyError, e:
-				print e
-
+		col_number = self.config.searchDOD(operation, code, self.spreadsheetDict)
+		return str(col_number)
 	#took out the string variable that was below
 	#its replaced by self.today			
-	
-
 	def getRowNumber(self):
 		row_entry = self.client.GetListFeed(self.sheet_key, self.wksht_id)
 		row_ct = 2
@@ -449,7 +423,7 @@ class SpreadsheetScript():
 							log.write("\nCreation of new worksheet was Unsuccessful")
 					else :
 						with open("editlog.txt","a") as log :
-							log.write("\Creation of new worksheet was Successful")
+							log.write("\nCreation of new worksheet was Successful")
 				elif command[1:len('SS')+1].lower() == 'SS'.lower():
 					val = command[command.find('(')+1:command.find(')')].strip()
 					
@@ -457,10 +431,10 @@ class SpreadsheetScript():
 						self.createSpreadsheet(val)
 					except :	
 						with open("editlog.txt","a") as log :
-							log.write("\nCreation of new Spreadsheet was Unsuccessful")
+							log.write("\nCreation of new spreadsheet was Unsuccessful")
 					else :
 						with open("editlog.txt","a") as log :
-							log.write("\nCreation of new Spreadsheet was Successful")
+							log.write("\nCreation of new spreadsheet was Successful")
 				else:
 					print 'Cannot find command: '+command
 			else:
@@ -564,8 +538,6 @@ Main Options
 def main():
 	user = False
 	pwd = False
-	operation = False
-	shortcode = False
 	insert = False
 	src = False
 	docName = False
@@ -590,7 +562,7 @@ def main():
 	
 	# check if user has entered the correct options
 	try:
-		opts, args = getopt.getopt(sys.argv[1:], "", ["user=", "pwd=", "operation=", "shortcode=","insert=", "src=", "docName=", "worksheet=", "print", "help", "iRowVal=", "iColVal=",
+		opts, args = getopt.getopt(sys.argv[1:], "", ["user=", "pwd=", "insert=", "src=", "docName=", "worksheet=", "print", "help", "iRowVal=", "iColVal=", \
 		"iCellVal=", "dCellVal=", "dRow=", "dWS=", "dSS=", "nSS=", "nWS=", "exit"])
 	except getopt.GetoptError, e:
 		print "python spreadsheetScript.py --help. For help:", e, "\n"
@@ -607,12 +579,6 @@ def main():
 		elif opt == "--pwd":
 			pwd = True
 			pwdVal = val
-		elif opt == "--operation":
-			operation = True
-			operationVal = val
-		elif opt == "--shortcode":
-			shortcode = True
-			shortcodeVal = val
 		elif opt == "--insert":
 			insert = True
 			insertVal = val
@@ -671,10 +637,6 @@ def main():
 	if hlp == True:
 		SpreadsheetScript.getHelp()
 		sys.exit(0)
-	elif operation == True or shortcode == True or insert == True:
-		if operation == False or shortcode == False or insert == False or docName == False:
-			print 'python spreadsheetScript.py --user email --pwd password --docName Title --operation operationTitle --shortcode shortcodeNum --insert val'
-			sys.exit(0)
 	else:
 		if user == False or pwd == False:
 			print "python spreadsheetScript.py --user email --pwd password"
@@ -693,13 +655,6 @@ def main():
 	client = SpreadsheetScript(userVal, pwdVal, srcVal)
 
 	log = open("editlog.txt","a+")
-
-	
-	
-	if operation == True and shortcode == True and insert == True and docName == True:
-		row = str(client.getRowNumber())
-		col = str(client.getOperationColumnNumber(operationVal, shortcodeVal))
-		client.updateCell(row+','+col+','+str(insertVal))
 	
 	if nSS == True:
 		client.createSpreadsheet(nSSVal)
@@ -714,7 +669,7 @@ def main():
 		except :	
 			log.write("\nCreation of new worksheet was Unsuccessful")
 		else :
-			log.write("\Creation of new worksheet was Successful")
+			log.write("\nCreation of new worksheet was Successful")
 			
 		
 	if worksheet == True :
@@ -724,10 +679,16 @@ def main():
 	else:
 		client.wksht_id = client.selectWorksheet(client.sheet_key, worksheetVal)
 		
-	if operation == True and shortcode == True and insert == True and docName == True:
+	if insert == True and docName == True:
 		row = str(client.getRowNumber())
-		col = str(client.getOperationColumnNumber(operationVal, shortcodeVal))
-		client.updateCell((row+','+col+','+str(insertVal)).split(';'))
+		set_of_values = insertVal.split(";")
+		valueToPass = []
+		for each_set in set_of_values :
+			spl_val = each_set.split(",")
+			col = str(client.getOperationColumnNumber(spl_val[0], spl_val[1]))
+			valueToPass.append(row+","+col+","+str(spl_val[2]))
+		
+		client.updateCell(valueToPass)
 	
 	if iRowVal == True:
 		iRowValVal = iRowValVal.split(';')

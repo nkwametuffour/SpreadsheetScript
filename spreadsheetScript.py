@@ -79,8 +79,7 @@ class SpreadsheetScript():
 		return [token.refresh_token, token.access_token]
 		
 	def __store_token(self, accs_data):
-		os.system("mkdi
-		r "+os.environ['HOME']+"/.hide")
+		os.system("mkdir "+os.environ['HOME']+"/.hide")
 		os.system("touch tokens.txt")
 		f = open(os.environ['HOME']+'/.hide/tokens.txt','w+')
 		for i in range(len(accs_data)):

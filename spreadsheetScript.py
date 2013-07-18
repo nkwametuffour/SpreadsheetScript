@@ -209,6 +209,12 @@ class SpreadsheetScript():
 				self.sheet_key = doc.id.text.rsplit('/', 1)[1]
 				return self.sheet_key
 		return ''
+		
+	# function to exit program if there self.sheet_key is an empty string
+	def exit_if_no_key(self):
+		if self.sheet_key == '':
+			print "No Spreadsheet selected. Exiting..."
+			sys.exit(2)
 	
 	# returns all worksheet IDs of a spreadsheet as a list
 	def getWorksheetIds(self, s_key):
@@ -403,6 +409,7 @@ class SpreadsheetScript():
 					val = command[command.find('(')+1:command.find(')')].strip()
 					#val = val.split(';')
 					client.sheet_key = client.getSpreadsheetKey(val)
+					client.exit_if_no_key()
 				elif command[0:len('clear')+1].lower() == 'clear'.lower():
 					os.system("clear")
 				else:
@@ -658,6 +665,7 @@ def main():
 	if nSS == True:
 		client.createSpreadsheet(nSSVal)
 	client.sheet_key = client.getSpreadsheetKey(docNameVal)
+	client.exit_if_no_key()
 	if nWS == True:
 		nWSVal = nWSVal.split(',')
 		try:

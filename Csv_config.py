@@ -7,9 +7,9 @@ class Csv_config():
 	def searchDOD(self, operation,code,dictionary) :
 		
 		for each_dict in dictionary :
-			if operation == each_dict :
+			if operation.lower() == each_dict.lower() :
 				for key in dictionary[each_dict] :
-					if code == key :
+					if code.lower() == key.lower() :
 						return dictionary[each_dict][key]
 	#The return value is a dictionary of dictionaries					
 	def buildDictionary(self, csvfile):

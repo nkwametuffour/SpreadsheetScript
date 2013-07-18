@@ -1,5 +1,5 @@
 #!/usr/bin/python
-import Csv_config
+import csv_config
 import gdata.spreadsheet.service
 import gdata
 import gdata.client
@@ -27,7 +27,7 @@ class SpreadsheetScript():
 	def __init__(self, email, password, src='Default'):
 		f = open("editlog.txt","w")
 		f.close()
-		self.config = Csv_config.Csv_config()
+		self.config = csv_config.Csv_config()
 		#csv_config is the string of the file path of the configuration file
 		self.spreadsheetDict = self.config.buildDictionary("config.csv")
 		user = email
@@ -80,7 +80,8 @@ class SpreadsheetScript():
 		return [token.refresh_token, token.access_token]
 		
 	def __store_token(self, accs_data):
-		os.system("mkdir "+os.environ['HOME']+"/.hide")
+		os.system("mkdi
+		r "+os.environ['HOME']+"/.hide")
 		os.system("touch tokens.txt")
 		f = open(os.environ['HOME']+'/.hide/tokens.txt','w+')
 		for i in range(len(accs_data)):

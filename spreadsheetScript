@@ -1,0 +1,117 @@
+.TH SPREADSHEETSCRIPT 1 "18th July, 2013" "Version 1.0"
+.SH NAME
+spreadsheetScript.py \- Accesses and edits google spreadsheets in your google drive
+.SH SYNOPSIS
+\fBpython spreadsheetScript.py --user\fP \fIemail\fP \fB--pwd\fP \fIpassword\fP [OPTIONS]...
+.SH DESCRIPTION
+spreadsheetScrip.py is a python program that accesses google spreadsheets in a google drive and performs some actions on them.
+To start with you have to define your email and password so we can access your google drive. This program only accesses spreadsheets and nothing else. It performs actions on these spreadsheets based on the arguments you give it. The program can be used both on the command line and in an interactive simulation of a python shell...because the program is cool like that. Not that the interactive part of the program only works when the \fB--exit\fP option is not specified with the terminal command. When issuing the command you have to use either the \fB--docName\fP or \fB--nSS\fP so we know which spreadsheet you want to work with
+.SS Command line Options
+.TP
+\fB--user\fP	
+Takes in the email of the user as its parameter
+.TP
+\fB--pwd\fP	
+Takes in the password of the user as its paramter
+.TP
+\fB--src\fP 	
+Takes in the source name of the spreadsheet
+.TP
+\fB--docName\fP	
+Takes the Tite of the spreadsheet document you want to work with
+.TP
+\fB--worksheet\fP	
+Takes the Title of the worksheet you wan to work with. If not specified, the first worksheet is used
+.TP
+\fB--iRowVal\fP	
+Inserts values into specified row
+.TP
+\fB--iColVal\fP 	
+Inserts values into specified column
+.TP	
+\fB--iCellVal\fP 	
+Inserts values into specified cell
+.TP
+\fB--dCellVal\fP	
+Deletes value in specified cell
+.TP
+\fB--dWS\fP	
+Deletes specified worksheet from working spreadsheet.
+.TP
+\fB--dSS\fP	
+Deletes specified spreadsheet from google drive
+.TP
+\fB--nWS\fP	
+Creates a new worksheet in the working spreadsheet with the specified name
+.TP
+\fB--nSS\fP	
+Creates a new spreadsheet in google drive with the specified name
+.TP
+\fB--exits\fP	
+Exits after the all commands have been executed. Use if you want to do eveything in one command. This is the command line version ;-)
+.TP
+\fB--print\fP 	
+Prints the contents of the working worksheet
+.TP
+\fB--help\fP 
+Prints the help page. Your looking at a man page so you don't really need this option
+.SS Interactive shell options
+You cannot use more than one option at any point in time...sorry.
+.TP
+\fBiRowVal()\fP 	
+Inserts specified values into specified row
+.TP
+\fBiColVal()\fP 	
+Inserts specified values into specified column 
+.TP
+\fBiCellVal()\fP	
+Inserts specified value into specified cell
+.TP
+\fBdCellVal()\fP	
+Deletes value in specified cell
+.TP
+\fBdWS()\fP	
+Deletes worksheet with specified name from working spreadsheet
+.TP
+\fBdSS()\fP	
+Deletes spreadsheet with specified name
+.TP
+\fBnWS()\fP	
+Creates new worksheet with specified name in working spreadsheet
+.TP
+\fBnSS()\fP	
+Creates new spreadsheet with specified name
+.TP
+\fBcWS()\fP	
+Changes working worksheet to worksheet with specified name within working spreadsheet
+.TP
+\fBcSS()\fP	
+Changes working spreadsheet to worksheet with specified name
+.TP
+\fBprint\fP		
+Prints contents of working worksheet to screen
+.TP
+\fBhelp\fP		
+Prints help screen
+.TP
+\fBexit\fP		
+Exits the program
+.SH EXAMPLES
+.TP
+\fB python spreadsheetScript.py --user\fP \fIemail\fP \fB--pwd\fP \fIpassword\fP \fB--docName\fP \fIdocument_name\fP \fB--iCellVal\fP \fI2,3,val\fP
+This inserts the value \fIval\fP into the cell with coordinates row \fI2\fP, column \fI3\fP in the first worksheet of the spreadsheet \fIdocument_name\fP and goes into the interactive part of the program. To avoid the interactive part, add \fB--exit\fP to the commands. To insert into more than one cell at a time, separate with a semi-colon (;). Tpye \fB--iCellVal\fP \fI2,2,A;3,3,B;4,4,C;\fP
+.TP
+\fB python spreadsheetScript.py --user\fP \fIemail\fP \fB--pwd\fP \fIpassword\fP \fB--nSS\fP \fITest\fP \fB--iRowVal\fP \fI2,A,B,C;3,D,E,F,G,H\fP
+Creates a new worksheet called \fITest\fP and inserts \fIA,B,C\fP and \fID,E,F,G,H\fP into rows \fI2\fP and \fI3\fP respectively. To insert into just one row at a time type \fB--iRowVal\fP \fI2,A,B,C\fP
+.SH NOTES
+.TP
+* All commands irrespective of the order typed in, are executed in the following order: new(n) or creating, insertions(i), deletions(d), other commands(print, help) and then exit
+.TP
+* When issuing the command you have to use either \fB--docName\fP or \fB--nSS\fP. You can use both. However, \fB--docName\fP has precedence over \fB--nSS\fP
+.TP
+* To avoid the interactive part of the program add \fB--exit\fP to the command arguments
+.SH AUTHORS
+.TP
+2013 - Originally written by 2013 Network Operations interns; Padmore Tuffour (padfor81@gmail.com), Enoch Nyako (enochnyako@gmail.com), Nanette Taylor (nanette.m.taylor@gmail.com) and Winifred Tettey (winifredtettey5@gmail.com)
+
+

@@ -13,7 +13,6 @@ from email.MIMEText import MIMEText
 import smtplib
 from Crypto.Cipher import AES
 import base64
-import os
 
 # Spreadsheet Class
 class SpreadsheetScript():
@@ -474,18 +473,6 @@ class SpreadsheetScript():
 					sys.exit(2)
 				else:
 					print 'Cannot find command: '+command
-
-	def deleteRowValues(self, row_index) :
-		#Puts an empty string in the specified cell
-		'''for index in row_index :
-			feed = self.client.GetListFeed(self.sheet_key, self.wksht_id)
-			row = feed.entry[int(index)]
-			self.client.UpdateRow(row, {'Keywords' : None})'''
-		pass
-
-	def deleteColValues(self, col_index):
-		pass
-					
 		
 	def updateCell(self, cellAndVal):
 		#Overwrites the value in the cell specified with new_value
@@ -677,12 +664,7 @@ def main():
 		elif opt == "--dSS":
 			dSS = True	
 			dSSVal = val
-		'''elif opt == "--cWS":
-			cWS = True	
-			cWSVal = val
-		elif opt == "--cSS":
-			cSS = True	
-			cSSVal = val'''
+		
 	
 	#worksheet = True
 	
@@ -825,7 +807,8 @@ def main():
 		client.sendMail()
 		sys.exit(0)
 
-	client.flow()
+	if ext == False:
+		client.flow()
 		
 # if script is being run as a standalone application, its name attribute is __main__
 if __name__ == '__main__':

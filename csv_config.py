@@ -2,16 +2,16 @@
 class Csv_config():
 	def __init__(self):
 		self.dictionary = {}
-	#This function searches the dictionary passed to it for the specified operation and short code
-	#The return value is the column number it can be found			
+
+		#This function searches the dictionary passed to it for the specified operation and short code
+		#The return value is the column number it can be found			
 	def searchDOD(self, operation,code,dictionary) :
-		
 		for each_dict in dictionary :
 			if operation.lower() == each_dict.lower() :
 				for key in dictionary[each_dict] :
 					if code.lower() == key.lower() :
 						return dictionary[each_dict][key]
-	#The return value is a dictionary of dictionaries					
+		#The return value is a dictionary of dictionaries					
 	def buildDictionary(self, csvfile):
 		strlist = []
 		#Here the configuration file is opened and each line is appended to strlist[]

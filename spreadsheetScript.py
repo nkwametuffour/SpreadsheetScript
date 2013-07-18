@@ -423,7 +423,7 @@ class SpreadsheetScript():
 							log.write("\nCreation of new worksheet was Unsuccessful")
 					else :
 						with open("editlog.txt","a") as log :
-							log.write("\Creation of new worksheet was Successful")
+							log.write("\nCreation of new worksheet was Successful")
 				elif command[1:len('SS')+1].lower() == 'SS'.lower():
 					val = command[command.find('(')+1:command.find(')')].strip()
 					
@@ -431,10 +431,17 @@ class SpreadsheetScript():
 						self.createSpreadsheet(val)
 					except :	
 						with open("editlog.txt","a") as log :
+<<<<<<< HEAD
+							log.write("\nCreation of new spreadsheet was Unsuccessful")
+					else :
+						with open("editlog.txt","a") as log :
+							log.write("\nCreation of new spreadsheet was Successful")
+=======
 							log.write("\nCreation of new Spreadsheet was Unsuccessful")
 					else :
 						with open("editlog.txt","a") as log :
 							log.write("\nCreation of new Spreadsheet was Successful")
+>>>>>>> 492de6c221601c3362c37a97f1ae352f566594f2
 				else:
 					print 'Cannot find command: '+command
 			else:
@@ -698,7 +705,7 @@ def main():
 		except :	
 			log.write("\nCreation of new worksheet was Unsuccessful")
 		else :
-			log.write("\Creation of new worksheet was Successful")
+			log.write("\nCreation of new worksheet was Successful")
 			
 		
 	if worksheet == True :

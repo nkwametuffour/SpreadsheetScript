@@ -37,23 +37,6 @@ class SpreadsheetScript():
 		except Exception, e:
 			print 'Login failed.',e
 		
-		#try:
-		#	user = raw_input('Enter username: ').strip()
-		#	pwd = raw_input('Enter password: ').strip()
-		#	# validate user and password
-		#	try:
-		#		self.__create_clients(user, pwd, src)
-		#	except Exception, e:
-		#		print 'Login failed.',e
-				
-			#self.__store_cred([user, pwd])
-		#except Exception, e:
-		#	print 'Program execution failed:',e
-		
-		#token = gdata.gauth.OAuth2Token(client_id=self.CLIENT_ID, client_secret=self.CLIENT_SECRET, scope=self.SCOPE, user_agent=self.USER_AGENT, access_token=tkn[1], refresh_token=tkn[0])
-		# create gdata spreadsheet client instance and login with email and password
-		#self.client = gdata.spreadsheets.client.SpreadsheetsClient()
-		#token.authorize(self.client)
 		self.sheet_key = ''
 		self.wksht_id = ''	
 		
@@ -281,9 +264,9 @@ class SpreadsheetScript():
 		server.ehlo()
 		server.starttls()
 		server.ehlo()
-		server.login("rancardinterns2013@gmail.com","nopintern2013")
+		server.login("####@gmail.com","password")
 		message = msg.as_string()
-		server.sendmail('rancardinterns2013@gmail.com', self.client.email, message)
+		server.sendmail('#from_email', self.client.email, message)
 		os.remove("editlog.txt")
 				
 	#Takes in the document name, checks if it exists and asks the user for the worksheet to work with.
@@ -480,26 +463,6 @@ class SpreadsheetScript():
 			cell = cell.split(',')
 			self.client.UpdateCell(row = int(cell[0]), col = int(cell[1]), inputValue = None, key = self.sheet_key, wksht_id = self.wksht_id )
 	
-	#on hold for now
-	'''def deleteRowValues(self, rows):
-		#Puts an empty string in the cells on the specified row
-		for row in rows:
-			row = int(row)
-			list_of_values=self.worksheet.row_values(row)
-			#print list_of_values
-			for i in range(1,len(list_of_values)):
-				self.worksheet.update_cell(row,i,"")
-				self.client.UpdateCell(row = row, col = i, inputValue = None, key = self.sheet_key, wksht_id = self.wksht_id )
-	
-		def deleteColValues(self, docName, cols, wks = 0):
-		#Puts an empty string in the cells on the specified column
-		for col in cols:
-			col = int(col)
-			list_of_values=self.worksheet.col_values(col)
-			#print list_of_values
-			for i in range(1,len(list_of_values)):
-				self.worksheet.update_cell(i,col,"")
-	'''			
 	# prints script documentation
 	@staticmethod
 	def getHelp():

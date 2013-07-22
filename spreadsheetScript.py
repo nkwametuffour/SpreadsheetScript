@@ -8,7 +8,7 @@ import gdata.spreadsheets.client
 import getopt
 import sys
 import os
-from datetime import datetime
+import datetime
 import webbrowser
 from email.MIMEText import MIMEText
 import smtplib
@@ -103,9 +103,9 @@ class SpreadsheetScript():
 		f.close()
 
 	def getDate(self) :
-		currentDate = datetime.now()
-		currentDate = currentDate.strftime("%m/%d/%Y")
-		return currentDate.replace('/0', '0').lstrip('0')
+		yesterday = datetime.datetime.now() - datetime.timedelta(days=1)
+		yesterday = yesterdat.strftime("%d-%b-%Y")
+		return yesterday.lstrip('0')
 
 	# create a new Google spreadsheet in Drive
 	def createSpreadsheet(self, doc):

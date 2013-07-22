@@ -104,7 +104,7 @@ class SpreadsheetScript():
 
 	def getDate(self) :
 		yesterday = datetime.datetime.now() - datetime.timedelta(days=1)
-		yesterday = yesterdat.strftime("%d-%b-%Y")
+		yesterday = yesterday.strftime("%d-%b-%Y")
 		return yesterday.lstrip('0')
 
 	# create a new Google spreadsheet in Drive

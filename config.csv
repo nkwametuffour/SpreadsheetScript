@@ -1,2 +1,17 @@
-,Subscription,,,,,,,,Subscription Growth,,,,,,Pushed msgs,,,,,,Successfully billed msgs,,,,,,,Success rate,,,,,,
-Date,80101,80102,40601,1988,80104 -2nd Del,80104 - low P,80107,Total,80101,80102,40601,1988,80104,Overall,80101,80102,40601,,80104,Total,80101,80102,40601,1988,80104 2nd del,80104 low P,80107,80101,80102,40601,1988,80104 2nd del,80104 - low P,80107
+Tigo GH
+,Subscription,,,,,,,,,,,,Subscription Growth,,,,,,,Pushed msgs,,,,,,,Successfully billed msgs,,,,,,,,,,,,Success rate,,,,,,,,,
+Date,80101 - SMS PLUS,80102,40601,1988,80104 - 2nd Del,80104 - low P,80107,1985,80105,NOL,GHL,Total,80101,80102,40601,1988,80104,80105,Overall,80101,80102,40601,198801,80104,198501,Total,80101,80102,40601,1988,80107,198501,80105,Total 80104,80104 2nd del,80104 low P,GHL,RNDVU,80101,80102,40601,1988,80104 2nd del,80104 - low P,80107,198501,80105,1985
+
+MTN GH
+,SUBSCRIPTIONS,,,,,,,,,,,,,,,,BILLED MESSAGES,,,,,,,,,,,,Success Rate,,,,,Unsubscriptions,,,Total,Subs Growth (net),Billed,,Pushed,,,,
+DATE,1983 (ESPN),1983 (HOTS),1983 (SPRING),1983 (MTV),Total 1983,1988 (MY CLUB),1988 (NEWS),1988 (SPORTS),TOTAL 1988 ,RNDVU(1981),GHL,1989 (NOL),1989 (LA LIGA),Total 1989,UNEBO(1984),TOTAL,1983 (MTV),1988 (BBC),1983 (ESPN),1983 (HOTS),1983 (SPRING),Total 1983,1981(RNDVU),GHL,1989 (NOL),1989(LA LIGA),Total 1989,1984(UNEBO),1989 (NOL),1983,LA LIGA,Total MTN 1988 (BBC),unebo,,,,,MTN 1988 (BBC),"ESPN/ HOTS/ Spring",Total Billed,1981,1983,1984,1988,1989
+
+Airtel
+,Subscriptions,,,,,,,,,,,,Billed,,,,,Success Rate,,,,Unsubscriptions,,,,,,,,Subs Growth (net),,,,,D2M DATA,,,,,Pushed Messages,,,,
+DATE,1985 (MTV),1988 (BBC),1988 (FBALL),1988 (NEWS),1988 (SPORTS),MyClub,Total Airtel 1988,1984 (ESPN),1987 (NOL),GHL,RNDV,TOTAL,1985 (MTV),1988 (bbc),1984 (ESPN),1987 (NOL),UNEBO,Airtel 1985,Airtel 1988,Airtel 1984,Airtel 1987,TOTAL,,,,,,,,Airtel 1985,Airtel 1988,Airtel 1984,Airtel 1987,,D2M Subs,D2M Pushed,D2M Billed,Success Rate,,1985,1988,1984,1987,1456
+
+Vodafone
+date,Subs - 2000,Growth in sub base - 2000,Pushed - 2000,Promo Pushed count - 2000,Total Pushed,Billed - 2000,Success Rate (2000),Subs growth - 1988,Subs - 1988,BBC 1988 Billed Count,1988 pushed,1988 success rate,2002 Billed,2002 Pushed,2002 Subs,2002 Success Rate
+
+Hourly Cnts - Pushed
+Date,Hour,OT InfoShop,*Tigo SMS+,OT BBC,MTN NG BBC SPORTS,MTN GH BBC,Tigo BBC,Glo NG VOA,Glo NG NOL,MTN NG BBC,Airtel GH BBC

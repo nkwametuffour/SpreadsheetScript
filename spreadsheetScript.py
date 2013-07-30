@@ -4,7 +4,7 @@ import gdata.spreadsheet.service
 import gdata
 import gdata.client
 import gdata.docs.client
-import gdata.spreadsheets.client
+#import gdata.spreadsheets.client
 import getopt
 import sys
 import os
@@ -12,7 +12,7 @@ import datetime
 import webbrowser
 from email.MIMEText import MIMEText
 import smtplib
-from Crypto.Cipher import AES
+#from Crypto.Cipher import AES
 import base64
 
 # Spreadsheet Class
@@ -23,12 +23,12 @@ class SpreadsheetScript():
 	SCOPE = 'https://spreadsheets.google.com/feeds/'
 	USER_AGENT = 'Spreadsheet'
 	
-	def __init__(self, email, password, src='Default'):
+	def __init__(self, email, password, wksht, src='Default'):
 		f = open("editlog.txt","w")
 		f.close()
 		self.config = csv_config.Csv_config()
 		#csv_config is the string of the file path of the configuration file
-		self.spreadsheetDict = self.config.buildDictionary("config.csv")
+		self.spreadsheetDict = self.config.buildDictionary("/home/padmore/Documents/SpreadsheetScript/config.csv", wksht)
 		user = email
 		pwd = password
 		self.today = self.getDate()
@@ -36,6 +36,7 @@ class SpreadsheetScript():
 			self.__create_clients(user, pwd, src)
 		except Exception, e:
 			print 'Login failed.',e
+			sys.exit(2)
 		
 		self.sheet_key = ''
 		self.wksht_id = ''	
@@ -104,8 +105,8 @@ class SpreadsheetScript():
 
 	def getDate(self) :
 		yesterday = datetime.datetime.now() - datetime.timedelta(days=1)
-		yesterday = yesterday.strftime("%d-%b-%Y")
-		return yesterday.lstrip('0')
+		yesterday = yesterday.strftime("%m/%d/%Y")
+		return yesterday.replace('/0', '0').lstrip('0')
 
 	# create a new Google spreadsheet in Drive
 	def createSpreadsheet(self, doc):
@@ -237,8 +238,12 @@ class SpreadsheetScript():
 		else:
 			print 'Record delete unsuccessful'
 			
-	def getOperationColumnNumber(self, operation, code):
-		col_number = self.config.searchDOD(operation, code, self.spreadsheetDict)
+	def getOperationColumnNumber(self, operation, code=None):
+		try:
+			col_number = self.config.searchDOD(operation, code, self.spreadsheetDict)
+		except Exception, e:
+			print 'Column not Found:',e
+			sys.exit(2)
 		return str(col_number)
 	#took out the string variable that was below
 	#its replaced by self.today			
@@ -255,7 +260,7 @@ class SpreadsheetScript():
 		with open("editlog.txt","rb") as text :
 			msg = MIMEText(text.read())
 			
-		msg['From'] = "rancardinterns2013@gmail.com"
+		msg['From'] = "address_from@gmail.com"
 		msg['To'] = self.client.email
 		msg['Subject'] = "Update on SpreadSheet "
 		msg.preamble = "Edit Log"	
@@ -432,7 +437,7 @@ class SpreadsheetScript():
 				elif command[0:len('help')+1].lower() == 'help'.lower():
 					self.getHelp()
 				elif command[0:len('exit')+1].lower() == 'exit'.lower():
-					self.sendMail()
+					#self.sendMail()
 					sys.exit(2)
 				else:
 					print 'Cannot find command: '+command
@@ -639,7 +644,7 @@ def main():
 				SpreadsheetScript.getHelp()
 				sys.exit()
 	
-	client = SpreadsheetScript(userVal, pwdVal, srcVal)
+	client = SpreadsheetScript(userVal, pwdVal, worksheetVal, srcVal)
 
 	log = open("editlog.txt","a+")
 	
@@ -673,10 +678,22 @@ def main():
 		valueToPass = []
 		for each_set in set_of_values :
 			spl_val = each_set.split(",")
-			col = str(client.getOperationColumnNumber(spl_val[0], spl_val[1]))
-			valueToPass.append(row+","+col+","+str(spl_val[2]))
-		
-		client.updateCell(valueToPass)
+			if len(spl_val) == 2:
+				col = str(client.getOperationColumnNumber(spl_val[0]))
+				if row and col != 'None':
+					valueToPass.append(row+","+col+","+str(spl_val[1]))
+					client.updateCell(valueToPass)
+				else:
+					print 'Error: Insertion failed. Invalid row or column.'
+			elif len(spl_val) == 3:
+				col = str(client.getOperationColumnNumber(spl_val[0], spl_val[1]))
+				if row and col != 'None':
+					valueToPass.append(row+","+col+","+str(spl_val[2]))
+					client.updateCell(valueToPass)
+				else:
+					print 'Error: Insertion failed. Invalid row or column.'
+			else:
+				print 'Invalid insert format. Insert failed'
 	
 	if iRowVal == True:
 		iRowValVal = iRowValVal.split(';')
@@ -753,7 +770,7 @@ def main():
 	if prnt == True:
 		client.printData()
 	if ext == True:
-		client.sendMail()
+		#client.sendMail()
 		sys.exit(0)
 
 	if ext == False:

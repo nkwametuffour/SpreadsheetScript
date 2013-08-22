@@ -14,4 +14,4 @@ Vodafone
 date,Subs - 2000,Growth in sub base - 2000,Pushed - 2000,Promo Pushed count - 2000,Total Pushed,Billed - 2000,Success Rate (2000),Subs growth - 1988,Subs - 1988,BBC 1988 Billed Count,1988 pushed,1988 success rate,2002 Billed,2002 Pushed,2002 Subs,2002 Success Rate
 
 Hourly Cnts - Pushed
-Date,Hour,OT InfoShop,*Tigo SMS+,OT BBC,MTN NG BBC SPORTS,MTN GH BBC,Tigo BBC,Glo NG VOA,Glo NG NOL,MTN NG BBC,Airtel GH BBC
+Date (Hour),Hour,OT InfoShop - Transmission Push,OT InfoShop - Billing Push,*Tigo SMSPlus - Transmission Push,*Tigo SMSPlus - Billing Push,OT BBC - Transmission Push,OT BBC - Billing Push,MTN NG BBC SPORTS - Transmission Push,MTN NG BBC SPORTS - Billing Push,MTN GH BBC - Transmission Push,MTN GH BBC - Billing Push,Tigo BBC - Transmission Push,Tigo BBC - Billing Push,Glo NG VOA - Transmission Push,Glo NG VOA - Billing Push,Glo NG NOL - Transmission Push,Glo NG NOL - Billing Push,MTN NG BBC - Transmission Push,MTN NG BBC - Billing Push,Airtel GH BBC - Transmission Push,Airtel GH BBC - Billing Push

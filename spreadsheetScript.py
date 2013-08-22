@@ -15,7 +15,7 @@ import smtplib
 #from Crypto.Cipher import AES
 import base64
 
-# Spreadsheet Class
+# SpreadsheetScript Class
 class SpreadsheetScript():
 	
 	CLIENT_ID = '498758732944.apps.googleusercontent.com'
@@ -23,23 +23,24 @@ class SpreadsheetScript():
 	SCOPE = 'https://spreadsheets.google.com/feeds/'
 	USER_AGENT = 'Spreadsheet'
 	
-	def __init__(self, email, password, wksht, src='Default'):
+	def __init__(self, email, password, spdsht, wksht=None, src='Default'):
 		f = open("editlog.txt","w")
 		f.close()
 		self.config = csv_config.Csv_config()
-		#csv_config is the string of the file path of the configuration file
-		self.spreadsheetDict = self.config.buildDictionary("/home/padmore/Documents/SpreadsheetScript/config.csv", wksht)
-		user = email
-		pwd = password
 		self.today = self.getDate()
 		try:
-			self.__create_clients(user, pwd, src)
+			self.__create_clients(email, password, src)
 		except Exception, e:
 			print 'Login failed.',e
 			sys.exit(2)
 		
-		self.sheet_key = ''
-		self.wksht_id = ''	
+		self.sheet_key = self.getSpreadsheetKey(spdsht)
+		#csv_config is the string of the file path of the configuration file
+		if wksht:
+			self.spreadsheetDict = self.config.buildDictionary("/home/padmore/Documents/SpreadsheetScript/config.csv", wksht)
+			self.wksht_id = self.getWorksheetIdByName(wksht)
+		else:
+			self.wksht_id = 'od6'
 		
 	def __create_clients(self, user, pswd, src):
 		self.client = gdata.spreadsheet.service.SpreadsheetsService()
@@ -138,7 +139,7 @@ class SpreadsheetScript():
 	
 	# add worksheet with specified size to current spreadsheet document
 	def addWorksheet(self, name, row_size=20, col_size=20):
-		if name in self.getWorksheetTitles(self.sheet_key):
+		if name in self.getWorksheetTitles():
 			print "Please choose a unique worksheet name\n"
 		else:
 			self.client.AddWorksheet(name, row_size, col_size, self.sheet_key)
@@ -201,24 +202,24 @@ class SpreadsheetScript():
 			sys.exit(2)
 	
 	# returns all worksheet IDs of a spreadsheet as a list
-	def getWorksheetIds(self, s_key):
-		feed = self.client.GetWorksheetsFeed(s_key)
+	def getWorksheetIds(self):
+		feed = self.client.GetWorksheetsFeed(self.sheet_key)
 		wksheets = []
 		for sht in feed.entry:
 			wksheets.append(sht.id.text.rsplit('/',1)[1])
 		return wksheets
 		
 	#Returns a list of worksheet titles
-	def getWorksheetTitles(self, s_key):
-		feed = self.client.GetWorksheetsFeed(s_key)
+	def getWorksheetTitles(self):
+		feed = self.client.GetWorksheetsFeed(self.sheet_key)
 		wksheets = []
 		for sht in feed.entry:
 			wksheets.append(sht.title.text)
 		return wksheets
 	
 	# select from a list of worksheets	
-	def selectWorksheet(self, s_key, index):
-		return self.getWorksheetIds(s_key)[index]
+	def selectWorksheet(self, index):
+		return self.getWorksheetIds()[index]
 		
 	def getWorksheetIdByName(self, name):
 		wk_feed = self.client.GetWorksheetsFeed(self.sheet_key)
@@ -245,13 +246,12 @@ class SpreadsheetScript():
 			print 'Column not Found:',e
 			sys.exit(2)
 		return str(col_number)
-	#took out the string variable that was below
-	#its replaced by self.today			
-	def getRowNumber(self):
+				
+	def getRowNumber(self,search_str):
 		row_entry = self.client.GetListFeed(self.sheet_key, self.wksht_id)
 		row_ct = 2
 		for entry in row_entry.entry:
-			if self.today == entry.title.text:
+			if search_str == entry.title.text:
 				return row_ct
 			row_ct += 1
 			
@@ -551,6 +551,8 @@ def main():
 	nSS = False
 	nWS = False
 	ext = False
+	docNameVal = None
+	worksheetVal = None
 	
 	# check if user has entered the correct options
 	try:
@@ -635,23 +637,27 @@ def main():
 			print "python spreadsheetScript.py --help"
 			sys.exit(0)
 		if docName == False and nSS == False:
-			print "You have to specify a document or create a new Spreadsheet to work with"
+			print "Error: You have to specify a document or create a new Spreadsheet to work with."
+			sys.exit(2)
 		if nSS == True and docName == False:
 			docNameVal = nSSVal
 		if src == True:
 			if nSS == False:
-				print "You have to specify a new document"
-				SpreadsheetScript.getHelp()
+				print "Error: You have to specify a new document."
+				#SpreadsheetScript.getHelp()
 				sys.exit()
 	
-	client = SpreadsheetScript(userVal, pwdVal, worksheetVal, srcVal)
+	# checks if docNameVal and worksheetVal are true, or if only worksheetVal is false
+	if docNameVal and worksheetVal:
+		client = SpreadsheetScript(userVal, pwdVal, docNameVal, worksheetVal, srcVal)
+	elif not worksheetVal:
+		client = SpreadsheetScript(userVal, pwdVal, docNameVal, src=srcVal)
 
 	log = open("editlog.txt","a+")
 	
 	if nSS == True:
 		client.createSpreadsheet(nSSVal)
-	client.sheet_key = client.getSpreadsheetKey(docNameVal)
-	client.exit_if_no_key()
+	#client.exit_if_no_key()
 	if nWS == True:
 		nWSVal = nWSVal.split(',')
 		try:
@@ -659,21 +665,22 @@ def main():
 				client.addWorksheet(nWSVal[0], nWSVal[1], nWSVal[2])
 			else:
 				client.addWorksheet(nWSVal[0])
+			# assign id of worksheet created to client.wksht_id
+			client.wksht_id = client.getWorksheetIdByName(nWSVal)
 		except :	
 			log.write("\nCreation of new worksheet was Unsuccessful")
 		else :
 			log.write("\nCreation of new worksheet was Successful")
-			
-		
-	if worksheet == True :
-		client.wksht_id = client.getWorksheetIdByName(worksheetVal)
-	elif nWS == True:
-		client.wksht_id = client.getWorksheetIdByName(nWSVal)
-	else:
-		client.wksht_id = client.selectWorksheet(client.sheet_key, worksheetVal)
-		
+
+	#if worksheet == True :
+		#client.wksht_id = client.getWorksheetIdByName(worksheetVal)
+	#elif nWS == True:
+		#client.wksht_id = client.getWorksheetIdByName(nWSVal)
+	#else:
+		#pass
+
 	if insert == True and docName == True:
-		row = str(client.getRowNumber())
+		row = str(client.getRowNumber(client.today))
 		set_of_values = insertVal.split(";")
 		valueToPass = []
 		for each_set in set_of_values :
@@ -772,8 +779,7 @@ def main():
 	if ext == True:
 		#client.sendMail()
 		sys.exit(0)
-
-	if ext == False:
+	else:
 		client.flow()
 		
 # if script is being run as a standalone application, its name attribute is __main__

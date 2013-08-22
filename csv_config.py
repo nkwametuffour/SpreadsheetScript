@@ -1,4 +1,6 @@
 #!usr/bin/python
+import sys
+
 class Csv_config():
 	def __init__(self):
 		self.dictionary = {}
@@ -101,7 +103,8 @@ class Csv_config():
 				return self.dictionary
 		else:
 			# empty strlist -> headers not found
-			print 'Invalid Worksheet name. Headers not found'
+			print 'Error: Invalid Worksheet name. Headers not found'
+			sys.exit(2)
 """
 operation = raw_input("Input the operation to be searched: ")
 code = raw_input("Input the short code to be searched: ")
